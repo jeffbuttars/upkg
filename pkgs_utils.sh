@@ -25,7 +25,7 @@ clone()
     fi
 
    # assume git for the moment 
-   git clone $1
+   git clone $@
 } #clone
 
 clone_update()
@@ -36,9 +36,14 @@ clone_update()
         exit 1
     fi
 
-    rname=$(repo_name $1)
+    if [[ -n $2 ]]; then
+        rname=$2
+    else
+        rname=$(repo_name $1)
+    fi
+
     if [[ ! -d "$rname" ]]; then
-        git clone $1
+        git clone $@
     fi
 
     if [[ ! -d "$rname/.git" ]]; then
