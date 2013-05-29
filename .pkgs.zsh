@@ -1,10 +1,10 @@
 #!/bin/zsh
 
 if [[ -z $PKGS_DIR ]]
-    export PKGS_DIR="$HOME/pkgs"
 then
-    
+    export PKGS_DIR="$HOME/pkgs"
 fi
+
 cd "$PKGS_DIR"
 
 for pkg in $(ls -1) ; do
@@ -14,12 +14,16 @@ for pkg in $(ls -1) ; do
         # echo $pkg
         # echo "$pkg/.pkg.zsh"
 
-        if [[ -f "$HOME/pkgs/$pkg/.pkg.zsh" ]]; then
-            # echo "$HOME/pkgs/$pkg/.pkg.zsh" 
-            source "$HOME/pkgs/$pkg/.pkg.zsh" 
-        elif [[ -f "$HOME/pkgs/$pkg/.pkg.sh" ]]; then
-            # echo "$HOME/pkgs/$pkg/.pkg.sh" 
-            source "$HOME/pkgs/$pkg/.pkg.sh" 
+        if [[ -f "$pkg/.pkg.zsh" ]]; then
+            cd $pkg
+            # echo "$pkg/.pkg.zsh" 
+            source ".pkg.zsh" 
+            cd -
+        elif [[ -f "$pkg/.pkg.sh" ]]; then
+            cd $pkg
+            # echo "$pkg/.pkg.sh" 
+            source ".pkg.sh" 
+            cd -
         fi
     fi
 done
