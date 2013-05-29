@@ -1,6 +1,9 @@
 #!/bin/bash
 
-source  ~/pkgs/pkgs_utils.sh
+if [[ -z $PKGS_DIR ]]; then
+    PKGS_DIR="~/pkgs"
+fi
+.  "$PKGS_DIR/pkgs_utils.sh"
 
 # for KDE stuff
 repo='git://github.com/hayalci/kde-colors-solarized.git'
