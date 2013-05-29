@@ -4,6 +4,7 @@ pkg=jhome
 
 install:
 	./install.sh
+	chmod 600 $(HOME)/.ssh/config
 
 # uninstall:
 #     sudo rm -frv /usr/local/heroku

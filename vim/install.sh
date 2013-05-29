@@ -1,6 +1,10 @@
 #!/bin/bash
 
-.  ~/pkgs/pkgs_utils.sh
+if [[ -z $PKGS_DIR ]]; then
+    PKGS_DIR="~/pkgs"
+fi
+.  "$PKGS_DIR/pkgs_utils.sh"
+
 THIS_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 repo='git@github.com:jeffbuttars/Viming-With-Buttars.git'
@@ -25,14 +29,10 @@ if [ "$rurl_exists" = "0" ]; then
     git pull origin master
     git remote -v
 fi
-cd -
 
-if [ -f ~/.vimrc ]; then
-    echo "Backing up ~/.vimrc to ~/.vimrc.bak"
-    mv ~/.vimrc ~/.vimrc.bak
-fi
-
+mv -f ~/.vimrc ~/.vimrc.bak
 echo "set runtimepath=$THIS_DIR/vim,\$VIMRUNTIME" > ~/.vimrc
 echo "source $THIS_DIR/vim/.vimrc" >> ~/.vimrc
-
 vim +'BundleInstall!' +':q'
+
+cd -
