@@ -9,19 +9,19 @@ cd "$PKGS_DIR"
 
 for pkg in $(ls -1) ; do
 
+    # echo $(file $pkg)
     if [[ -d "$pkg" ]]
     then
-        # echo $pkg
-        # echo "$pkg/.pkg.zsh"
+        # echo "pkg?: $pkg"
 
         if [[ -f "$pkg/.pkg.zsh" ]]; then
             cd $pkg
-            # echo "$pkg/.pkg.zsh" 
+            # echo "sourcing $pkg/.pkg.zsh" 
             source ".pkg.zsh" 
             cd -
         elif [[ -f "$pkg/.pkg.sh" ]]; then
             cd $pkg
-            # echo "$pkg/.pkg.sh" 
+            # echo "sourcing $pkg/.pkg.sh" 
             source ".pkg.sh" 
             cd -
         fi
