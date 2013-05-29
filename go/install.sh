@@ -2,9 +2,15 @@
 
 # exit 0
 
-. /home/jeff/pkgs/go/.pkgs.sh
+. .pkg.sh
 gd='https://go.googlecode.com/files/go1.1.linux-amd64.tar.gz'
+tball='godown.tar.gz'
 
-curl "$gd" > /tmp/godown.tar.gz
-cd $GOPATH;
-tar xvf /tmp/godown.tar.gz
+if [[ -f "$tball" ]]; then
+    echo "Using exising go tarball"
+else
+    curl "$gd" > $tball
+fi
+
+# cd $GOPATH;
+tar xvf $tball
