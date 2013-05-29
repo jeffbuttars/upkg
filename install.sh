@@ -7,7 +7,7 @@ for pkg in $(ls -1) ; do
         if [[ -f "$pkg/install.sh" ]]; then
             echo "Running install on $pkg"
             cd $pkg
-            bash ./install.sh
+            make install
             cd -
         fi
     fi

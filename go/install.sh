@@ -1,6 +1,6 @@
 #!/bin/bash
 
-exit 0
+# exit 0
 
 . /home/jeff/pkgs/go/.pkgs.sh
 gd='https://go.googlecode.com/files/go1.1.linux-amd64.tar.gz'
