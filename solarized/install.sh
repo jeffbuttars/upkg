@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ -z $PKGS_DIR ]]; then
-    PKGS_DIR="~/pkgs"
+    PKGS_DIR="$HOME/pkgs"
 fi
 .  "$PKGS_DIR/pkgs_utils.sh"
 
