@@ -11,12 +11,8 @@ for pkg in $(ls -1) ; do
 
     if [[ -d "$pkg" ]]
     then
-        # echo $pkg
-        # echo "$pkg/.pkg.zsh"
         if [[ -f "$pkg/.pkg.sh" ]]; then
             cd $pkg
-            # echo $PWD
-            # echo ".pkg.sh" 
             . ".pkg.sh" 
             cd -
         fi
