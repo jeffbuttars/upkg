@@ -14,5 +14,3 @@ cd $sdir
 sh ./install.sh
 cd -
 
-cp -f xresources ~/.Xresources
-xrdb -merge ~/.Xresources
