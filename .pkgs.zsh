@@ -5,6 +5,7 @@ then
     export PKGS_DIR="$HOME/pkgs"
 fi
 
+orig_dir="$PWD"
 cd "$PKGS_DIR"
 
 for pkg in $(ls -1) ; do
@@ -23,4 +24,4 @@ for pkg in $(ls -1) ; do
     fi
 done
 
-cd -
+cd $orig_dir
