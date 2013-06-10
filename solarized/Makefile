@@ -17,3 +17,6 @@ uninstall:
 
 realclean:
 	rm -fr kde-colors-solarized
+
+check:
+	@echo ignored

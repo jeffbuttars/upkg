@@ -8,6 +8,9 @@ install:
 uninstall:
 	sudo rm -frv /usr/local/heroku
 
+check:
+	@echo "Nothing to check"
+
 # clean:
 #     cd $(pkg); make clean
 

@@ -15,3 +15,6 @@ install:
 
 realclean:
 	rm -fr $(pkg)
+
+check:
+	cd $pkg; git st
