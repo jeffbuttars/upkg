@@ -17,4 +17,3 @@ realclean:
 
 check:
 	cd $pkg; git st
-
