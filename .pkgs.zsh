@@ -15,11 +15,11 @@ for pkg in $(ls -1) ; do
         if [[ -f "$pkg/.pkg.zsh" ]]; then
             cd $pkg
             source ".pkg.zsh" 
-            cd -
+            cd - > /dev/null
         elif [[ -f "$pkg/.pkg.sh" ]]; then
             cd $pkg
             source ".pkg.sh" 
-            cd -
+            cd - > /dev/null
         fi
     fi
 done
