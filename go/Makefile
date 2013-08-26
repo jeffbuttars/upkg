@@ -12,3 +12,6 @@ clean:
 
 realclean:
 	rm -frv pkg src
+
+check:
+	git st

@@ -13,3 +13,6 @@ uninstall:
 
 realclean:
 	rm -fr vim
+
+check:
+	cd vim; git st

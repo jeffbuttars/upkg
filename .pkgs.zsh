@@ -13,6 +13,7 @@ for pkg in $(ls -1) ; do
     if [[ -d "$pkg" ]]
     then
         if [[ -f "$pkg/.pkg.zsh" ]]; then
+             # echo "going into $pkg"
             cd $pkg
             source ".pkg.zsh" 
             cd - > /dev/null

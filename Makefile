@@ -48,3 +48,16 @@ realclean:
 			fi \
 		fi \
 	done
+
+check:
+	@for pkg in $$(ls -1) ; do \
+		if [[ -d "$$pkg" ]]; then \
+			if [[ -f "$$pkg/Makefile" ]]; then \
+				echo "###################################################################"; \
+				echo "Running check on $$pkg"; \
+				cd $$pkg; \
+				make check; \
+				cd -; \
+			fi \
+		fi \
+	done

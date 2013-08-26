@@ -35,4 +35,10 @@ echo "set runtimepath=$THIS_DIR/vim,\$VIMRUNTIME" > ~/.vimrc
 echo "source $THIS_DIR/vim/.vimrc" >> ~/.vimrc
 vim +'BundleInstall!' +':q'
 
+# Build YouCompleteMe
+if [[ -d "~/.vim/bundle/YouCompleteMe" ]]; then
+    cd "~/.vim/bundle/YouCompleteMe"
+    ./install.sh --clang-completer
+fi
+
 cd -
