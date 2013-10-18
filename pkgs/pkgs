@@ -16,10 +16,10 @@ logger.addHandler(logger_ch)
 
 
 import argparse
-import tornado.ioloop
+# import tornado.ioloop
 
-from lib import search as pkg_search
-from lib import PkgsIOLoop
+from lib import Search, Install
+# from lib import PkgsIOLoop
 
 parser = argparse.ArgumentParser(
     "pkgs",
@@ -71,8 +71,14 @@ def main():
         logger.setLevel(logging.DEBUG)
 
     if args.search:
+        pkg_search = Search()
         pkg_search(args.search.pop(0))
         print(pkg_search)
+
+    if args.install:
+        pkg_install = Install()
+        pkg_install(args.install)
+        print(pkg_install)
 
     # PkgsIOLoop.instance().start()
 # main()

@@ -1,4 +1,4 @@
 from search.Search import Search
-search = Search()
+from search.Install import Install
 
-from pkgs_ioloop import PkgsIOLoop
+# from pkgs_ioloop import PkgsIOLoop;
