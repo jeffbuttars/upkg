@@ -1,0 +1,81 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
+import logging
+
+# Set up the logger
+logger = logging.getLogger('pkgs')
+# Use a console handler, set it to debug by default
+logger_ch = logging.StreamHandler()
+logger.setLevel(logging.INFO)
+log_formatter = logging.Formatter(('%(asctime)s %(levelname)s:%(process)s'
+                                   ' %(lineno)s:%(module)s:%(funcName)s()'
+                                   ' %(message)s'))
+logger_ch.setFormatter(log_formatter)
+logger.addHandler(logger_ch)
+
+
+import argparse
+import tornado.ioloop
+
+from lib import search as pkg_search
+from lib import PkgsIOLoop
+
+parser = argparse.ArgumentParser(
+    "pkgs",
+    description=("Package Yourself")
+)
+
+# parser.add_argument('-t', '--test',
+#                     default='default_value',
+#                     help=("Some nice help for this option")
+#                     )
+
+parser.add_argument('-d',
+                    '--debug',
+                    default=False, action='store_true',
+                    help=("Enable debug output and debug run mode")
+                    )
+
+# # positional argument
+# parser.add_argument('search',
+#                     default=None,
+#                     # nargs="?",
+#                     nargs=1,
+#                     help=("Search for a package/repo by name")
+#                     )
+
+# Sub parsers.
+search_parser = parser.add_subparsers(help=("search for pkgs"))
+
+search_parser_cmd = search_parser.add_parser('search', help=("search for pkgs"))
+search_parser_cmd.add_argument(
+    'search',
+    type=str,
+    default=None,
+    # nargs="?",
+    nargs=1,
+    help=("Search for a package/repo by name"),
+)
+
+
+args = parser.parse_args()
+logger.debug("args: %s", args)
+
+
+def main():
+    # Install our own IOLoop instance
+    # PkgsIOLoop().install()
+
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+
+    if args.search:
+        pkg_search(args.search.pop(0))
+        print(pkg_search)
+
+    # PkgsIOLoop.instance().start()
+# main()
+
+if __name__ == '__main__':
+    main()
