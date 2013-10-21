@@ -2,7 +2,8 @@
 class BaseCmd(object):
     """Docstring for Search """
 
-    name = 'search'
+    name = 'wonk'
+    help_text = ("wonk it")
 
     def __init__(self, sub_parser):
         """todo: to be defined
@@ -11,7 +12,9 @@ class BaseCmd(object):
         :type sub_parser: type description
         """
         self._sub_parser = sub_parser
-        self._cmd_parser = None
+        self._cmd_parser = self._sub_parser.add_parser(
+            self.name, help=self.help_text,
+        )
     #__init__()
 
     def build(self):

@@ -4,8 +4,8 @@ from cmds.base import BaseCmd
 class Cmd(BaseCmd):
     """Docstring for Search """
 
-    name = 'search'
-    help_text = ("search for pkgs")
+    name = 'update'
+    help_text = ("update installed pkgs")
 
     def build(self):
         """todo: Docstring for build
@@ -14,12 +14,12 @@ class Cmd(BaseCmd):
         """
 
         # self._cmd_parser.add_argument(
-        #     'search',
+        #     's',
         #     type=str,
         #     default=None,
         #     # nargs="?",
         #     nargs=1,
-        #     help=("Search for a package/repo by name"),
+        #     help=(""),
         # )
 
         return super(Cmd, self).build()
