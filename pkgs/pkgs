@@ -18,8 +18,10 @@ logger.addHandler(logger_ch)
 import argparse
 # import tornado.ioloop
 
-from lib import Search, Install
+# from lib import Search, Install
 # from lib import PkgsIOLoop
+
+import cmds
 
 parser = argparse.ArgumentParser(
     "pkgs",
@@ -45,42 +47,37 @@ parser.add_argument('-d',
 #                     help=("Search for a package/repo by name")
 #                     )
 
-# Sub parsers.
-search_parser = parser.add_subparsers(help=("search for pkgs"))
-
-search_parser_cmd = search_parser.add_parser('search', help=("search for pkgs"))
-search_parser_cmd.add_argument(
-    'search',
-    type=str,
-    default=None,
-    # nargs="?",
-    nargs=1,
-    help=("Search for a package/repo by name"),
-)
-
-
-args = parser.parse_args()
-logger.debug("args: %s", args)
-
 
 def main():
     # Install our own IOLoop instance
     # PkgsIOLoop().install()
 
+    # Sub parsers.
+    sub_parser = parser.add_subparsers(help=("pkgs commands"))
+    cmds.build_cmds(sub_parser)
+
+    args = parser.parse_args()
+    logger.debug("args: %s", args)
+
     if args.debug:
         logger.setLevel(logging.DEBUG)
 
-    if args.search:
-        pkg_search = Search()
-        pkg_search(args.search.pop(0))
-        print(pkg_search)
+    if hasattr(args, 'func'):
+        args.func(args)
 
-    if args.install:
-        pkg_install = Install()
-        pkg_install(args.install)
-        print(pkg_install)
+    # if args.search:
+    #     pkg_search = Search()
+    #     pkg_search(args.search.pop(0))
+    #     print(pkg_search)
+
+    # if args.install:
+    #     pkg_install = Install()
+    #     pkg_install(args.install)
+    #     print(pkg_install)
 
     # PkgsIOLoop.instance().start()
+
+    parser.print_help()
 # main()
 
 if __name__ == '__main__':
