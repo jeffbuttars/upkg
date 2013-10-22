@@ -39,6 +39,12 @@ parser.add_argument('-d',
                     help=("Enable debug output and debug run mode")
                     )
 
+parser.add_argument('-c',
+                    '--config',
+                    default=None,
+                    help=("Specify a config file location.")
+                    )
+
 # # positional argument
 # parser.add_argument('search',
 #                     default=None,
@@ -57,10 +63,15 @@ def main():
     cmds.build_cmds(sub_parser)
 
     args = parser.parse_args()
-    logger.debug("args: %s", args)
-
     if args.debug:
         logger.setLevel(logging.DEBUG)
+
+    logger.debug("args: %s", args)
+
+    import conf
+    conf.load_settings(args.config)
+
+    logger.debug("settings: %s", conf.settings)
 
     if hasattr(args, 'func'):
         args.func(args)

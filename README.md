@@ -13,6 +13,12 @@ manager.
 * Make something installable.
 * Support config file(s)
 
+## Config file
+
+* It's python.
+* At ~/.config/pkgs/pkgs_cfg.py
+* runtime switch -c to override default
+
 ## CMDS
 
 ### install
