@@ -19,6 +19,22 @@ _config = {
 settings = None
 
 
+def _clean_path(p):
+    """todo: Docstring for _clen_path
+
+    :param p: arg description
+    :type p: type description
+    :return:
+    :rtype:
+    """
+
+    np = os.path.expanduser(p)
+    np = os.path.abspath(np)
+
+    return np
+#_clean_path()
+
+
 def load_settings(cfg_path=None):
     """todo: Docstring for load_settings
 
@@ -42,6 +58,10 @@ def load_settings(cfg_path=None):
             if m[0][0] != '_':
                 cfg_d[m[0]] = m[1]
         # end for m in inspect.getme
+
+    # Make the paths absolute.
+    cfg_d["cfg_path"] = _clean_path(cfg_d["cfg_path"])
+    cfg_d["pkgs_destdir"] = _clean_path(cfg_d["pkgs_destdir"])
 
     settings = Namespace(**cfg_d)
 #load_settings()
