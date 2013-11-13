@@ -4,21 +4,6 @@ from argparse import Namespace
 from importlib.machinery import SourceFileLoader
 
 
-# Set config defaults
-_config = {
-    # Default path to config file.
-    "cfg_path": "~/.config/pkgs/pkgs_cfg.py",
-
-    # The install destination directory
-    'pkgs_destdir': '~/.pkgs',
-
-    # Require the user to have root access to use pkgs
-    'require_root': False,
-}
-
-settings = None
-
-
 def _clean_path(p):
     """todo: Docstring for _clen_path
 
@@ -33,6 +18,22 @@ def _clean_path(p):
 
     return np
 #_clean_path()
+
+
+# Set config defaults
+_config = {
+    # Default path to config file.
+    "cfg_path": _clean_path("~/.config/pkgs/pkgs_cfg.py"),
+
+    # The install destination directory
+    'pkgs_destdir': _clean_path('~/.pkgs'),
+
+    # Require the user to have root access to use pkgs
+    'require_root': False,
+}
+
+
+settings = Namespace(**_config)
 
 
 def load_settings(cfg_path=None):

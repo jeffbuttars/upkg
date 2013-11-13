@@ -1,12 +1,18 @@
 import logging
 logger = logging.getLogger('pkgs')
 
+import os
+
 from sh import git
-from urlib.parse import urlparse
+from urllib.parse import urlparse
 
 from cmds.base import BaseCmd
-from ..conf import settings
+from conf import settings
 
+
+def out_she_goes(line):
+    print(line)
+#out_she_goes()
 
 
 class Cmd(BaseCmd):
@@ -41,17 +47,26 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
-        # check if the already exists, if so, don't install
+        # make sure the destination dir exists.
+        if not os.path.exists(settings.pkgs_destdir):
+            os.makedirs(settings.pkgs_destdir)
+
+        # check if the already exists, if so, don't install, update it?
         url = urlparse(repo)
+        url_path = url[2]
+        path_end = url_path.split('/')
+        path_end = path_end[len(path_end) - 1]
 
         if url.scheme not in self.supported_schemes:
             raise Exception("Unsupported scheme '{}' for {}".format(url.scheme, repo))
 
-        # 
-
-
         # Clone it.
-        git.clone("{} {}".format(repo, settings.pkgs_destdir))
+        dest = os.path.join(settings.pkgs_destdir, path_end)
+        logger.debug("cloning %s into %s .", repo, dest)
+        p = git.clone('--progress', repo, dest,
+                      _out=out_she_goes, _err=out_she_goes,
+                      _out_bufsize=0, _in_bufsize=0)
+        p.wait()
     #install_repo()
 
     def exec(self, args):

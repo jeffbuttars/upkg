@@ -74,19 +74,7 @@ def main():
     logger.debug("settings: %s", conf.settings)
 
     if hasattr(args, 'func'):
-        args.func(args)
-
-    # if args.search:
-    #     pkg_search = Search()
-    #     pkg_search(args.search.pop(0))
-    #     print(pkg_search)
-
-    # if args.install:
-    #     pkg_install = Install()
-    #     pkg_install(args.install)
-    #     print(pkg_install)
-
-    # PkgsIOLoop.instance().start()
+        return args.func(args)
 
     parser.print_help()
 # main()
