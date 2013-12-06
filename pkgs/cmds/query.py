@@ -5,7 +5,7 @@ import os
 
 from cmds.base import BaseCmd
 from conf import settings
-from lib import nice_pkg_name
+from lib import nice_pkg_name, installed_list
 
 
 class Cmd(BaseCmd):
@@ -49,7 +49,6 @@ class Cmd(BaseCmd):
 
         for p in pl:
             print(p)
-        # end for p in self.lis
     #exec()
 
     def list_pkgs(self):
@@ -58,14 +57,6 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
-        dlist = os.listdir(settings.pkgs_destdir)
-        res = []
-        for d in dlist:
-            dp = os.path.join(settings.pkgs_destdir, d)
-            if os.path.isdir(dp):
-                res.append(nice_pkg_name(d))
-        # end for d in dlist
-
-        return res
+        return [nice_pkg_name(x) for x in installed_list()]
     #list_pkgs()
 # Cmd
