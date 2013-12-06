@@ -38,7 +38,7 @@ def pkg_name_to_path(pkgname):
 
     logger.debug("'%s'", pkgname)
 
-    dlist = os.listdir(settings.pkgs_destdir)
+    dlist = installed_list()
 
     for d in dlist:
         fp = os.path.join(settings.pkgs_destdir, d)
@@ -72,7 +72,7 @@ def did_u_mean(name):
     """
     logger.debug("%s", name)
 
-    dlist = os.listdir(settings.pkgs_destdir)
+    dlist = installed_list()
     res = []
     for d in dlist:
         if name in d or d in name:
@@ -84,3 +84,18 @@ def did_u_mean(name):
 
     return ""
 #did_u_mean()
+
+
+def installed_list():
+    """todo: Docstring for installed_list
+    :return:
+    :rtype:
+    """
+
+    res = []
+    for x in os.listdir(settings.pkgs_destdir):
+        if os.path.isdir(os.path.join(settings.pkgs_destdir, x)):
+            res.append(x)
+
+    return res
+#installed_list()
