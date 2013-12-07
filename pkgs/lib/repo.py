@@ -3,13 +3,99 @@ logger = logging.getLogger('pkgs')
 
 import os
 import sys
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
+
+from blessings import Terminal
+
 import shutil
 from urllib.parse import urlparse
 from pprint import pformat as pf
 from sh import git
 
 from conf import settings
-from lib.base import InvalidRepo, pkg_name_to_path, did_u_mean
+
+
+ugly_ext = ('.git', '.hg')
+
+
+class InvalidRepo(Exception):
+    """Docstring for InvalidRepo """
+    pass
+#InvalidRepo
+
+
+def repo_dirlist():
+    """List out the directories in the install location(s)
+    :return:
+    :rtype:
+    """
+
+    for d in os.listdir(settings.pkgs_destdir):
+        dp = os.path.join(settings.pkgs_destdir, d)
+        # logger.debug("%s", dp)
+        if os.path.isdir(dp):
+            yield {'base': d, 'root': settings.pkgs_destdir,
+                   'path': dp}
+#repo_dirlist()
+
+
+def did_u_mean(name):
+    """todo: Docstring for did_u_mean
+
+    :param name: arg description
+    :type name: type description
+    :return:
+    :rtype:
+    """
+    logger.debug("%s", name)
+
+    dlist = Repo.installed()
+    res = []
+    for d in dlist:
+        if name in d or d in name:
+            res.append(nice_pkg_name(d))
+    # end for d in dlist
+
+    if res:
+        return "Did you mean '" + " or ".join(res) + "'?"
+
+    return ""
+#did_u_mean()
+
+
+def pkg_name_to_path(pkgname):
+    """todo: Docstring for pkg_name_to_path
+
+    :param pkgname: arg description
+    :type pkgname: type description
+    :return:
+    :rtype:
+    """
+
+    logger.debug("'%s'", pkgname)
+
+    fp = os.path.join(settings.pkgs_destdir, pkgname)
+    if os.path.isdir(fp):
+        logger.debug("found %s", fp)
+        return fp
+
+    # Try to find the repo dir if just needs an extension
+    for d in repo_dirlist():
+        logger.debug("trying %s", d)
+        if d['base'].startswith(pkgname):
+            # logger.debug("startwith")
+            root, ext = os.path.splitext(d['base'])
+            if pkgname == root:
+                logger.debug("found %s", d)
+                return d['path']
+    # end for d in dlist
+
+    logger.debug("found nothing")
+    return ""
+#pkg_name_to_path()
 
 
 def nice_pkg_name(name):
@@ -31,47 +117,12 @@ def nice_pkg_name(name):
 #nice_pkg_name()
 
 
-def pkg_name_to_path(pkgname):
-    """todo: Docstring for pkg_name_to_path
-
-    :param pkgname: arg description
-    :type pkgname: type description
-    :return:
-    :rtype:
-    """
-
-    logger.debug("'%s'", pkgname)
-
-    dlist = Repo.installed()
-
-    for d in dlist:
-        fp = os.path.join(settings.pkgs_destdir, d)
-        # logger.debug("checking if %s", fp)
-        if not os.path.isdir(fp):
-            # logger.debug("moving on")
-            continue
-
-        if pkgname == d:
-            # logger.debug("match")
-            return fp
-
-        if d.startswith(pkgname):
-            # logger.debug("startwith")
-            root, ext = os.path.splitext(d)
-            if pkgname == root:
-                return fp
-    # end for d in dlist
-
-    return None
-#pkg_name_to_path()
-
-
 class Repo(object):
     """
         Repo object. Perform git operations on a given repo.
     """
 
-    def __init__(self, repo_dir=None, name=None, url=None):
+    def __init__(self, repo_dir="", name="", url=""):
         """todo: to be defined
 
         :param repo_dir: arg description
@@ -81,8 +132,9 @@ class Repo(object):
         :param url: arg description
         :type url: type description
         """
+        logger.debug("repo_dir: %s, name: %s, url: %s", repo_dir, name, url)
 
-        if not repo_dir or name or url:
+        if not (repo_dir or name or url):
             estr = "You must supply at least one of: repo_dir, name, or url."
             logger.error(estr)
             raise InvalidRepo(estr)
@@ -90,8 +142,11 @@ class Repo(object):
         self._repo_dir = repo_dir
         self._name = name
         self._url = url
-        self._basename = None
+        self._basename = ""
 
+        self.supported_schemes = ('https', 'http', 'file', '')
+
+        self.term = Terminal()
     #__init__()
 
     def __repr__(self):
@@ -100,15 +155,34 @@ class Repo(object):
         :rtype:
         """
 
-        return pf(self.info())
+        return "{} URL:{} LOCATION: {}".format(
+            self._name,
+            self._url,
+            self._repo_dir
+        )
     #__repr__()
 
-    def _sh_stdout(self, line):
-        print(line)
+    def _build_writer(self, output, color=None):
+        if color:
+
+            def _cwriter(line):
+                go = getattr(self.term, color)
+                output(go(line))
+
+            return _cwriter
+
+        def _writer(line):
+            output(line)
+
+        return _writer
+    #_build_writer()
+
+    def _sh_stdout(self, color=None):
+        return self._build_writer(sys.stdout.write, color)
     #_sh_stdout()
 
-    def _sh_stderr(self, line):
-        sys.stderr.write("{}\n".format(line))
+    def _sh_stderr(self, color=None):
+        return self._build_writer(sys.stderr.write, color)
     #_sh_stderr()
 
     def __str__(self):
@@ -117,57 +191,77 @@ class Repo(object):
         :rtype:
         """
 
-        return pf(self.info())
+        return "{} : {}".format(self.name, self.url)
     #__str__()
 
     @property
     def name(self):
+        logger.debug("name: %s", self._name)
+
         if not self._name:
-            self._name = nice_pkg_name(self._basename)
+            self._name = nice_pkg_name(self.basename)
 
         return self._name
 
     @property
     def repo_dir(self):
+        logger.debug("repo_dir: %s", self._repo_dir)
+
         if not self._repo_dir:
-            self._repo_dir = pkg_name_to_path(self.basename)
-                
+            bn = self.basename
+            if bn:
+                self._repo_dir = os.path.join(settings.pkgs_destdir, bn)
+
         return self._repo_dir
 
     @property
     def url(self):
-        if not self._url:
-            # Get it from the git info
-            rd = self.repo_dir
+        logger.debug("url: %s", self._url)
 
-                
-        return self.url
+        if not self._url:
+            rd = self.repo_dir
+            out = StringIO()
+            cwd = os.getcwd()
+            os.chdir(rd)
+
+            p = git('ls-remote', '--get-url',
+                        _out=out, _err=self._sh_stderr('red'),
+                        _out_bufsize=0, _in_bufsize=0)
+            p.wait()
+            os.chdir(cwd)
+            self._url = out.getvalue().strip()
+            logger.debug("URL? %s", self._url)
+            out.close()
+
+        return self._url
 
     @property
     def basename(self):
+        logger.debug("basename: %s", self._basename)
 
         if self._repo_dir:
             self._basename = os.path.basename(self._repo_dir)
         elif self._url:
-            url = urlparse(self.url)
-            self._basename = sys.path.basename(url.path)
+            url = urlparse(self._url)
+            self._basename = os.path.basename(url.path)
         else:
-            self._basename = sys.path.basename(pkg_name_to_path(self._name))
+            self._basename = os.path.basename(pkg_name_to_path(self._name))
 
         return self._basename
 
     @classmethod
-    def installed(cls, self):
+    def installed(cls):
         """todo: Docstring for list
         :return:
         :rtype:
         """
+        logger.debug("")
 
         res = []
-        for x in os.listdir(settings.pkgs_destdir):
-            d = os.path.join(settings.pkgs_destdir, x)
+        for x in repo_dirlist():
+            d = x['path']
             try:
-                res.append(Repo(repo_dir=d))
+                res.append(Repo(repo_dir=d, name=x['base']))
             except InvalidRepo:
                 logger.warning("Invalid repo '%s' in the installation directory.", d)
 
@@ -179,6 +273,7 @@ class Repo(object):
         :return:
         :rtype:
         """
+        logger.debug("")
 
         if not self.url:
             estr = "Cannot install this repos without a URL. %s" % self.info()
@@ -194,56 +289,68 @@ class Repo(object):
         if url.scheme not in self.supported_schemes:
             raise ValueError("Unsupported scheme '{}' for {}".format(url.scheme, self.url))
 
+        assert self.repo_dir, "Invalid repo directory."
+
         # Clone it.
-        dest = os.path.join(settings.pkgs_destdir, path_end)
-        logger.debug("cloning %s into %s .", self.url, dest)
-        p = git.clone('--progress', self.url, dest,
-                      _out=self._sh_stdout, _err=self._sh_stderr,
+        logger.debug("cloning %s into %s .", self.url, self.repo_dir)
+        print(self.term.green("\nInstalling %s ... " % self.url))
+        p = git.clone('--progress', self.url, self.repo_dir,
+                      _out=self._sh_stdout(color='green'),
+                      _err=self._sh_stderr('blue'),
                       _out_bufsize=0, _in_bufsize=0)
         p.wait()
     #install()
-
-    def update(self):
-        """todo: Docstring for update
-        :return:
-        :rtype:
-        """
-
-        pass
-    #update()
 
     def remove(self):
         """todo: Docstring for remove
         :return:
         :rtype:
         """
+        logger.debug("")
 
-        pkg = pkg_name_to_path(self.name)
+        rd = self.repo_dir
 
-        logger.debug("pkg path %s", pkg)
-        if not pkg:
+        logger.debug("pkg path %s", rd)
+        if not rd:
             print(
                 "unable to find pkg '%s'. %s" % (self.name, did_u_mean(self.name))
             )
+            return
 
         # Does the repo have any uncommitted changes?
         # Is the repo out of sync(needs a push?)
 
         # Are you sure?
-        resp = input("Are you sure you want to remove the '%s' pkg? [y|N] " % self.name)
+        resp = input(self.term.red("Are you sure you want to remove the '%s' pkg? [y|N] "))
 
         if resp == 'y' or resp == 'yes':
-            print('removing %s...' % self.name)
-            shutil.rmtree(pkg)
+            print(self.term.red('removing %s...' % self.name))
+            shutil.rmtree(rd)
 
     #remove()
 
-    def info(self):
-        """todo: Docstring for info
+    def update(self):
+        """todo: Docstring for update
         :return:
         :rtype:
         """
+        logger.debug("")
 
-        pass
-    #info()
+        rd = self.repo_dir
+
+        logger.debug("pkg path %s", rd)
+        if not rd:
+            print(
+                "unable to find pkg '%s'. %s" % (self.name, did_u_mean(self.name))
+            )
+
+        cwd = sys.getcwd()
+        sys.chdir(self.repo_dir)
+        logger.debug("updating %s ", self.repo_dir)
+        p = git.update('--progress',
+                       _out=self._sh_stdout(), _err=self._sh_stderr,
+                       _out_bufsize=0, _in_bufsize=0)
+        p.wait()
+        sys.chdir(cwd)
+    #update()
 #Repo
