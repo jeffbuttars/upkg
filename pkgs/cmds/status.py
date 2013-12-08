@@ -63,21 +63,23 @@ class Cmd(BaseCmd):
 
         t = Terminal()
         for r in rlist:
-            logger.debug("calling statsu on: %s", r)
+            logger.debug("calling status on: %s", r)
             rp = r.repo_dir
 
             rpw = len(rp)
             w = t.width
-            print("\n")
+            bw = int(((w - rpw) / 2) - 1)
+            nw = int(((w - len(r.name)) / 2) - 1)
+            print(t.magenta("*" * w))
+            print(t.magenta("{} {} {}".format(" " * nw, r.name, " " * nw)))
             if (rpw + 2) < w:
-                bw = int(((w - rpw) / 2) - 1)
-                nw = int(((w - len(r.name)) / 2) - 1)
-                print("{} {} {}".format("*" * nw, r.name, "*" * nw))
-                print("{} {} {}".format("*" * bw, rp, "*" * bw))
+                print(t.magenta("{} {} {}".format(" " * bw, rp, " " * bw)))
             else:
-                print(rpw)
+                print(t.magenta(rpw))
+            print(t.magenta("*" * w))
 
             r.status()
+            print("\n")
         # end for r in rlist
     #status()
 # Cmd
