@@ -112,8 +112,10 @@ def nice_pkg_name(name):
     root, ext = os.path.splitext(name)
 
     if ext in ugly_ext:
+        logger.debug("remove ext %s to get %s", ext, root)
         return root
 
+    logger.debug("no change %s", name)
     return name
 #nice_pkg_name()
 
@@ -141,7 +143,7 @@ class Repo(object):
             raise InvalidRepo(estr)
 
         self._repo_dir = repo_dir
-        self._name = name
+        self._name = nice_pkg_name(name)
         self._url = url
         self._basename = ""
 
