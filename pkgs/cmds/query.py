@@ -1,11 +1,8 @@
 import logging
 logger = logging.getLogger('pkgs')
 
-import os
-
 from cmds.base import BaseCmd
-from conf import settings
-from lib import nice_pkg_name, installed_list
+from lib import Repo
 
 
 class Cmd(BaseCmd):
@@ -43,20 +40,13 @@ class Cmd(BaseCmd):
 
         logger.debug("query %s", args.query)
 
-        pl = self.list_pkgs()
+        pl = Repo.installed()
         if not pl:
-            print("No packages installed, use 'pkgs install'")    
+            print("No packages installed, use 'pkgs install'")
 
+        idx = 1
         for p in pl:
-            print(p)
+            print("[%s] %s" % (idx, p))
+            idx += 1
     #exec()
-
-    def list_pkgs(self):
-        """todo: Docstring for self.list_pkgs
-        :return:
-        :rtype:
-        """
-
-        return [nice_pkg_name(x) for x in installed_list()]
-    #list_pkgs()
 # Cmd

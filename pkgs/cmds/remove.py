@@ -1,10 +1,9 @@
 import logging
 logger = logging.getLogger('pkgs')
 
-import shutil
 
-from lib import pkg_name_to_path, did_u_mean
 from cmds.base import BaseCmd
+from lib import Repo
 
 
 class Cmd(BaseCmd):
@@ -42,11 +41,12 @@ class Cmd(BaseCmd):
         logger.debug("remove %s", args.remove)
 
         for pkg in args.remove:
+            logger.debug("removing %s", pkg)
             self.remove_repo(pkg)
         # end for repo in args.remove
     #exec()
 
-    def remove_repo(self, repo):
+    def remove_repo(self, rname):
         """todo: Docstring for remove_repo
 
         :param repo: arg description
@@ -54,25 +54,10 @@ class Cmd(BaseCmd):
         :return:
         :rtype:
         """
-        logger.debug("%s", repo)
+        logger.debug("%s", rname)
+        repo = Repo(name=rname)
+        repo.remove()
 
-        pkg = pkg_name_to_path(repo)
-
-        logger.debug("pkg path %s", pkg)
-        if not pkg:
-            print(
-                "unable to find pkg '%s'. %s" % (repo, did_u_mean(repo))
-            )
-
-        # Does the repo have any uncommitted changes?
-        # Is the repo out of sync(needs a push?)
-
-        # Are you sure?
-        resp = input("Are you sure you want to remove the '%s' pkg? [y|N] " % repo).lower()
-
-        if resp == 'y' or resp == 'yes':
-            print('removing %s...' % repo)
-            shutil.rmtree(pkg)
-
+        return repo
     #remove_repo()
 # Cmd

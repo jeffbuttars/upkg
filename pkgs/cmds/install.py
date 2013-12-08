@@ -8,11 +8,7 @@ from urllib.parse import urlparse
 
 from cmds.base import BaseCmd
 from conf import settings
-
-
-def out_she_goes(line):
-    print(line)
-#out_she_goes()
+from lib import Repo
 
 
 class Cmd(BaseCmd):
@@ -20,7 +16,6 @@ class Cmd(BaseCmd):
 
     name = 'install'
     help_text = ("install pkgs")
-    supported_schemes = ('https', 'http', 'file', '')
 
     def build(self):
         """todo: Docstring for build
@@ -47,26 +42,15 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
+
         # make sure the destination dir exists.
         if not os.path.exists(settings.pkgs_destdir):
             os.makedirs(settings.pkgs_destdir)
 
-        # check if the already exists, if so, don't install, update it?
-        url = urlparse(repo)
-        url_path = url[2]
-        path_end = url_path.split('/')
-        path_end = path_end[len(path_end) - 1]
+        repo = Repo(url=repo)
+        repo.install()
 
-        if url.scheme not in self.supported_schemes:
-            raise Exception("Unsupported scheme '{}' for {}".format(url.scheme, repo))
-
-        # Clone it.
-        dest = os.path.join(settings.pkgs_destdir, path_end)
-        logger.debug("cloning %s into %s .", repo, dest)
-        p = git.clone('--progress', repo, dest,
-                      _out=out_she_goes, _err=out_she_goes,
-                      _out_bufsize=0, _in_bufsize=0)
-        p.wait()
+        return repo
     #install_repo()
 
     def exec(self, args):
@@ -84,4 +68,4 @@ class Cmd(BaseCmd):
             self.install_repo(repo)
         # end for repo in args.install
     #exec()
-# Cmd
+#repo Cmd

@@ -2,7 +2,7 @@ import logging
 logger = logging.getLogger('pkgs')
 
 from cmds.base import BaseCmd
-from lib import installed_list()
+from lib import Repo
 
 
 class Cmd(BaseCmd):
@@ -50,13 +50,14 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
-        pass
-        rlist = []
         if not repos:
             # Update them all!
-            rlist = installed_list()
+            rlist = [Repo(name=x) for x in repos]
         else:
-            # make sure the supplied repos are valid, if they are, update them!
-            pass
+            rlist = Repo.installed()
+
+        for r in rlist:
+            r.update()
+        # end for r in rlist
     #update()
 # Cmd
