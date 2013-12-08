@@ -268,13 +268,13 @@ class Repo(object):
         return res
     #installed()
 
-    def install(self):
-        """todo: Docstring for install
+    def clone(self):
+        """todo: Docstring for clone
         :return:
         :rtype:
         """
         logger.debug("")
-
+    
         if not self.url:
             estr = "Cannot install this repos without a URL. %s" % self.info()
             logger.warning(estr)
@@ -298,6 +298,16 @@ class Repo(object):
         p = git.clone('--progress', self.url, self.repo_dir,
                       _out=self._sh_stdout('blue'), _err=self._sh_stderr('blue'))
         p.wait()
+    #clone()
+
+    def install(self):
+        """todo: Docstring for install
+        :return:
+        :rtype:
+        """
+        logger.debug("")
+
+        self.clone()
     #install()
 
     def remove(self):
@@ -346,9 +356,52 @@ class Repo(object):
         cwd = os.getcwd()
         os.chdir(self.repo_dir)
         logger.debug("cwd: %s, updating %s ", cwd, self.repo_dir)
-        p = git.pull('--progress',
-                     _out=self._sh_stdout('blue'), _err=self._sh_stderr('blue'))
-        p.wait()
+        try:
+            p = git.pull('--rebase', '--progress',
+                         _out=self._sh_stdout('blue'),
+                         _err=self._sh_stderr('red'))
+            p.wait()
+        except Exception as e:
+            pass
+            # logger.warn(e)
+
         os.chdir(cwd)
     #update()
+
+    def push(self):
+        """todo: Docstring for push
+        :return:
+        :rtype:
+        """
+
+        pass
+    #push()
+
+    def status(self):
+        """Get status on the repo.
+        :return:
+        :rtype:
+        """
+
+        rd = self.repo_dir
+
+        logger.debug("pkg path %s", rd)
+        if not rd:
+            print(
+                "unable to find pkg '%s'. %s" % (self.name, did_u_mean(self.name))
+            )
+
+        cwd = os.getcwd()
+        os.chdir(self.repo_dir)
+        logger.debug("cwd: %s, getting status %s ", cwd, self.repo_dir)
+        try:
+            p = git.status(_out=self._sh_stdout('blue'),
+                           _err=self._sh_stderr('red'))
+            p.wait()
+        except Exception:
+            pass
+            # logger.warn(e)
+        os.chdir(cwd)
+
+    #status()
 #Repo
