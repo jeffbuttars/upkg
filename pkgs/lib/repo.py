@@ -36,7 +36,8 @@ def repo_dirlist():
     for d in os.listdir(settings.pkgs_destdir):
         dp = os.path.join(settings.pkgs_destdir, d)
         # logger.debug("%s", dp)
-        if os.path.isdir(dp):
+        if os.path.isdir(dp) and d[0] != '.':
+            # logger.debug("adding %s", dp)
             yield {'base': d, 'root': settings.pkgs_destdir,
                    'path': dp}
 #repo_dirlist()
@@ -55,8 +56,8 @@ def did_u_mean(name):
     dlist = Repo.installed()
     res = []
     for d in dlist:
-        if name in d or d in name:
-            res.append(nice_pkg_name(d))
+        if name in d.name or d.name in name:
+            res.append(nice_pkg_name(d.name))
     # end for d in dlist
 
     if res:
@@ -162,27 +163,27 @@ class Repo(object):
         )
     #__repr__()
 
-    def _build_writer(self, output, color=None):
+    def _build_writer(self, output, color=None, prefix=""):
         if color:
 
             def _cwriter(line):
                 go = getattr(self.term, color)
-                output(go(line))
+                output(go(self.name + ": " + prefix + line))
 
             return _cwriter
 
         def _writer(line):
-            output(line)
+            output(self.name + ": " + prefix + line)
 
         return _writer
     #_build_writer()
 
-    def _sh_stdout(self, color=None):
-        return self._build_writer(sys.stdout.write, color)
+    def _sh_stdout(self, *args, **kwargs):
+        return self._build_writer(sys.stdout.write, *args, **kwargs)
     #_sh_stdout()
 
-    def _sh_stderr(self, color=None):
-        return self._build_writer(sys.stderr.write, color)
+    def _sh_stderr(self, *args, **kwargs):
+        return self._build_writer(sys.stderr.write, *args, **kwargs)
     #_sh_stderr()
 
     def __str__(self):
@@ -225,8 +226,7 @@ class Repo(object):
             os.chdir(rd)
 
             p = git('ls-remote', '--get-url',
-                        _out=out, _err=self._sh_stderr('red'),
-                        _out_bufsize=0, _in_bufsize=0)
+                        _out=out, _err=self._sh_stderr('red'))
             p.wait()
             os.chdir(cwd)
             self._url = out.getvalue().strip()
@@ -294,10 +294,9 @@ class Repo(object):
         # Clone it.
         logger.debug("cloning %s into %s .", self.url, self.repo_dir)
         print(self.term.green("\nInstalling %s ... " % self.url))
+
         p = git.clone('--progress', self.url, self.repo_dir,
-                      _out=self._sh_stdout(color='green'),
-                      _err=self._sh_stderr('blue'),
-                      _out_bufsize=0, _in_bufsize=0)
+                      _out=self._sh_stdout('blue'), _err=self._sh_stderr('blue'))
         p.wait()
     #install()
 
@@ -344,13 +343,12 @@ class Repo(object):
                 "unable to find pkg '%s'. %s" % (self.name, did_u_mean(self.name))
             )
 
-        cwd = sys.getcwd()
-        sys.chdir(self.repo_dir)
-        logger.debug("updating %s ", self.repo_dir)
-        p = git.update('--progress',
-                       _out=self._sh_stdout(), _err=self._sh_stderr,
-                       _out_bufsize=0, _in_bufsize=0)
+        cwd = os.getcwd()
+        os.chdir(self.repo_dir)
+        logger.debug("cwd: %s, updating %s ", cwd, self.repo_dir)
+        p = git.pull('--progress',
+                     _out=self._sh_stdout('blue'), _err=self._sh_stderr('blue'))
         p.wait()
-        sys.chdir(cwd)
+        os.chdir(cwd)
     #update()
 #Repo
