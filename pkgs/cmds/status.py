@@ -64,9 +64,20 @@ class Cmd(BaseCmd):
         t = Terminal()
         for r in rlist:
             logger.debug("calling statsu on: %s", r)
-            r.status()
+            rp = r.repo_dir
+
+            rpw = len(rp)
             w = t.width
-            print("\n" + ("*" * w) + "\n")
+            print("\n")
+            if (rpw + 2) < w:
+                bw = int(((w - rpw) / 2) - 1)
+                nw = int(((w - len(r.name)) / 2) - 1)
+                print("{} {} {}".format("*" * nw, r.name, "*" * nw))
+                print("{} {} {}".format("*" * bw, rp, "*" * bw))
+            else:
+                print(rpw)
+
+            r.status()
         # end for r in rlist
     #status()
 # Cmd
