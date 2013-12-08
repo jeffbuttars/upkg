@@ -49,14 +49,18 @@ class Cmd(BaseCmd):
         :return:
         :rtype:
         """
+        logger.debug("repos: %s", repos)
 
-        if not repos:
-            # Update them all!
+        if repos:
             rlist = [Repo(name=x) for x in repos]
         else:
+            # Update them all!
             rlist = Repo.installed()
 
+        logger.debug("repo list: %s", rlist)
+
         for r in rlist:
+            logger.debug("calling update on: %s", r)
             r.update()
         # end for r in rlist
     #update()
