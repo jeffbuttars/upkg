@@ -14,3 +14,4 @@
     * ?
 * Short Cmds
 * Cmd aliases
+* 'goto' command, take user to the pkg dir and run a shell there.
