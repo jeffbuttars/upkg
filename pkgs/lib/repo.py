@@ -3,6 +3,8 @@ logger = logging.getLogger('pkgs')
 
 import os
 import sys
+import subprocess
+
 try:
     from StringIO import StringIO
 except ImportError:
@@ -13,10 +15,12 @@ from blessings import Terminal
 import shutil
 from urllib.parse import urlparse
 from pprint import pformat as pf
+import sh
 from sh import git
 
 from conf import settings
 
+sh.logging_enabled = True
 
 ugly_ext = ('.git', '.hg')
 
@@ -310,6 +314,22 @@ class Repo(object):
         logger.debug("")
 
         self.clone()
+
+        logger.debug("Checking for install script")
+
+        inst = os.path.join(self.repo_dir, '_pkgs', 'install')
+        if os.path.exists(inst):
+            cwd = os.getcwd()
+            logger.debug("chdir to %s", os.path.join(self.repo_dir, '_pkgs'))
+            logger.debug("install script is %s", inst)
+            self.term.blue("Running install script at %s\n" % inst)
+            logger.debug("runnin script %s", inst)
+            # We use subprocess instead of the sh module due to problems with
+            # runing shell scripts with sh
+            os.chdir(os.path.join(self.repo_dir, '_pkgs'))
+            subprocess.check_call(inst, shell=True)
+            os.chdir(cwd)
+            self.term.green("install script finished")
     #install()
 
     def remove(self):
@@ -368,6 +388,15 @@ class Repo(object):
             # logger.warn(e)
 
         os.chdir(cwd)
+
+        up = os.path.join(self.repo_dir, '_pkgs', 'update')
+        if os.path.exists(up):
+            # We use subprocess instead of the sh module due to problems with
+            # runing shell scripts with sh
+            cwd = os.getcwd()
+            os.chdir(os.path.join(self.repo_dir, '_pkgs'))
+            subprocess.check_call(up, shell=True)
+            os.chdir(cwd)
     #update()
 
     def push(self):
@@ -406,4 +435,5 @@ class Repo(object):
         os.chdir(cwd)
 
     #status()
+
 #Repo
