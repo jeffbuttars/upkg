@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 
 from cmds.base import BaseCmd
 from lib import Repo
@@ -9,7 +9,7 @@ class Cmd(BaseCmd):
     """Docstring for Search """
 
     name = 'update'
-    help_text = ("update all or some pkgs")
+    help_text = ("update all or some upkg")
 
     def build(self):
         """todo: Docstring for build

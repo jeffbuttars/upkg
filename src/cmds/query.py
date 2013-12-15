@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 
 from cmds.base import BaseCmd
 from lib import Repo
@@ -23,7 +23,7 @@ class Cmd(BaseCmd):
             default=None,
             nargs="*",
             # nargs=1,
-            help=("Get information about installed 'pkgs'"),
+            help=("Get information about installed 'upkg'"),
         )
 
         return super(Cmd, self).build()
@@ -42,7 +42,7 @@ class Cmd(BaseCmd):
 
         pl = Repo.installed()
         if not pl:
-            print("No packages installed, use 'pkgs install'")
+            print("No packages installed, use 'upkg install'")
 
         idx = 1
         for p in pl:

@@ -23,12 +23,12 @@ def _clean_path(p):
 # Set config defaults
 _config = {
     # Default path to config file.
-    "cfg_path": _clean_path("~/.config/pkgs/pkgs_cfg.py"),
+    "cfg_path": _clean_path("~/.config/upkg/upkg_cfg.py"),
 
     # The install destination directory
-    'pkgs_destdir': _clean_path('~/.pkgs'),
+    'upkg_destdir': _clean_path('~/.upkg'),
 
-    # Require the user to have root access to use pkgs
+    # Require the user to have root access to use upkg
     'require_root': False,
 }
 
@@ -52,7 +52,7 @@ def load_settings(cfg_path=None):
     cfg_d = _config.copy()
 
     if os.path.exists(cfg_path):
-        sfl = SourceFileLoader('pkgs_cfg', cfg_path)
+        sfl = SourceFileLoader('upkg_cfg', cfg_path)
         cfg_mod = sfl.load_module()
 
         for m in inspect.getmembers(cfg_mod):
@@ -62,7 +62,7 @@ def load_settings(cfg_path=None):
 
     # Make the paths absolute.
     cfg_d["cfg_path"] = _clean_path(cfg_d["cfg_path"])
-    cfg_d["pkgs_destdir"] = _clean_path(cfg_d["pkgs_destdir"])
+    cfg_d["upkg_destdir"] = _clean_path(cfg_d["upkg_destdir"])
 
     settings = Namespace(**cfg_d)
 #load_settings()

@@ -4,7 +4,7 @@
 import logging
 
 # Set up the logger
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 cmd_logger = logging.getLogger('command')
 # Use a console handler, set it to debug by default
 logger_ch = logging.StreamHandler()
@@ -20,12 +20,12 @@ import argparse
 # import tornado.ioloop
 
 # from lib import Search, Install
-# from lib import PkgsIOLoop
+# from lib import UpkgIOLoop
 
 import cmds
 
 parser = argparse.ArgumentParser(
-    "pkgs",
+    "upkg",
     description=("Package Yourself")
 )
 
@@ -57,10 +57,10 @@ parser.add_argument('-c',
 
 def main():
     # Install our own IOLoop instance
-    # PkgsIOLoop().install()
+    # UpkgIOLoop().install()
 
     # Sub parsers.
-    sub_parser = parser.add_subparsers(help=("pkgs commands"))
+    sub_parser = parser.add_subparsers(help=("upkg commands"))
     cmds.build_cmds(sub_parser)
 
     args = parser.parse_args()

@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 
 import os
 
@@ -15,7 +15,7 @@ class Cmd(BaseCmd):
     """Docstring for Search """
 
     name = 'install'
-    help_text = ("install pkgs")
+    help_text = ("install upkg")
 
     def build(self):
         """todo: Docstring for build
@@ -44,8 +44,8 @@ class Cmd(BaseCmd):
 
 
         # make sure the destination dir exists.
-        if not os.path.exists(settings.pkgs_destdir):
-            os.makedirs(settings.pkgs_destdir)
+        if not os.path.exists(settings.upkg_destdir):
+            os.makedirs(settings.upkg_destdir)
 
         repo = Repo(url=repo)
         repo.install()

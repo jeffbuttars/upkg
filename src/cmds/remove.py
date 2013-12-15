@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 
 
 from cmds.base import BaseCmd

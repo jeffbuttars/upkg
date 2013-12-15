@@ -1,5 +1,5 @@
 
-# PKGS
+# UPKG
 Manage Yourself  
 Use Git repos as installable program packages, just like a system package
 manager.
@@ -16,7 +16,7 @@ manager.
 ## Config file
 
 * It's python.
-* At ~/.config/pkgs/pkgs_cfg.py
+* At ~/.config/upkg/upkg_cfg.py
 * runtime switch -c to override default
 
 ## CMDS

@@ -5,7 +5,7 @@ class Cmd(BaseCmd):
     """Docstring for Search """
 
     name = 'provides'
-    help_text = ("find what pkgs provides what file")
+    help_text = ("find what upkg provides what file")
 
     def build(self):
         """todo: Docstring for build

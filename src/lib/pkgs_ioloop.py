@@ -1,6 +1,6 @@
 import logging
-logger = logging.getLogger('pkgs')
-# mailogger = logging.getLogger('pkgs-maillogger')
+logger = logging.getLogger('upkg')
+# mailogger = logging.getLogger('upkg-maillogger')
 
 import sys
 # import smtplib
@@ -8,9 +8,9 @@ import sys
 from tornado.ioloop import IOLoop
 
 
-# class PkgsIOLoop(EPollIOLoop, object):
-class PkgsIOLoop(IOLoop):
-    """PkgsIOLoop
+# class UpkgIOLoop(EPollIOLoop, object):
+class UpkgIOLoop(IOLoop):
+    """UpkgIOLoop
     """
 
    #  def initialize(self, **kwargs):
@@ -21,7 +21,7 @@ class PkgsIOLoop(IOLoop):
    #      :return:
    #      :rtype:
    #      """
-   #      super(PkgsIOLoop, self).initialize(**kwargs)
+   #      super(UpkgIOLoop, self).initialize(**kwargs)
    # #initialize()
 
     def handle_callback_exception(self, callback):
@@ -53,10 +53,10 @@ class PkgsIOLoop(IOLoop):
 
         # sys.exit(1)
 
-        super(PkgsIOLoop, self).handle_callback_exception(callback)
+        super(UpkgIOLoop, self).handle_callback_exception(callback)
     #handle_callback_exception()
 
     # def start(self):
-    #     super(PkgsIOLoop, self).start()
+    #     super(UpkgIOLoop, self).start()
     # #start()
-#PkgsIOLoop
+#UpkgIOLoop

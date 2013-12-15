@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 
 import os
 import sys
@@ -37,12 +37,12 @@ def repo_dirlist():
     :rtype:
     """
 
-    for d in os.listdir(settings.pkgs_destdir):
-        dp = os.path.join(settings.pkgs_destdir, d)
+    for d in os.listdir(settings.upkg_destdir):
+        dp = os.path.join(settings.upkg_destdir, d)
         # logger.debug("%s", dp)
         if os.path.isdir(dp) and d[0] != '.':
             # logger.debug("adding %s", dp)
-            yield {'base': d, 'root': settings.pkgs_destdir,
+            yield {'base': d, 'root': settings.upkg_destdir,
                    'path': dp}
 #repo_dirlist()
 
@@ -82,7 +82,7 @@ def pkg_name_to_path(pkgname):
 
     logger.debug("'%s'", pkgname)
 
-    fp = os.path.join(settings.pkgs_destdir, pkgname)
+    fp = os.path.join(settings.upkg_destdir, pkgname)
     if os.path.isdir(fp):
         logger.debug("found %s", fp)
         return fp
@@ -217,7 +217,7 @@ class Repo(object):
         if not self._repo_dir:
             bn = self.basename
             if bn:
-                self._repo_dir = os.path.join(settings.pkgs_destdir, bn)
+                self._repo_dir = os.path.join(settings.upkg_destdir, bn)
 
         return self._repo_dir
 
@@ -317,16 +317,16 @@ class Repo(object):
 
         logger.debug("Checking for install script")
 
-        inst = os.path.join(self.repo_dir, '_pkgs', 'install')
+        inst = os.path.join(self.repo_dir, '_upkg', 'install')
         if os.path.exists(inst):
             cwd = os.getcwd()
-            logger.debug("chdir to %s", os.path.join(self.repo_dir, '_pkgs'))
+            logger.debug("chdir to %s", os.path.join(self.repo_dir, '_upkg'))
             logger.debug("install script is %s", inst)
             self.term.blue("Running install script at %s\n" % inst)
             logger.debug("runnin script %s", inst)
             # We use subprocess instead of the sh module due to problems with
             # runing shell scripts with sh
-            os.chdir(os.path.join(self.repo_dir, '_pkgs'))
+            os.chdir(os.path.join(self.repo_dir, '_upkg'))
             subprocess.check_call(inst, shell=True)
             os.chdir(cwd)
             self.term.green("install script finished")
@@ -389,12 +389,12 @@ class Repo(object):
 
         os.chdir(cwd)
 
-        up = os.path.join(self.repo_dir, '_pkgs', 'update')
+        up = os.path.join(self.repo_dir, '_upkg', 'update')
         if os.path.exists(up):
             # We use subprocess instead of the sh module due to problems with
             # runing shell scripts with sh
             cwd = os.getcwd()
-            os.chdir(os.path.join(self.repo_dir, '_pkgs'))
+            os.chdir(os.path.join(self.repo_dir, '_upkg'))
             subprocess.check_call(up, shell=True)
             os.chdir(cwd)
     #update()

@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('pkgs')
+logger = logging.getLogger('upkg')
 
 # import dateutil
 import dateutil.parser
@@ -17,7 +17,7 @@ class Search(object):
         """todo: to be defined """
 
         self._headers = {
-            'User-Agent': "https://github.com/jeffbuttars/pkgs",
+            'User-Agent': "https://github.com/jeffbuttars/upkg",
             'Accept': "application/vnd.github.preview",  # Acknowledge the dev API
         }
 
