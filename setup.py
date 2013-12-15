@@ -5,7 +5,7 @@ from setuptools import setup, find_packages
 
 
 setup(name='upkg',
-      version='0.1.1',
+      version='0.1.2',
       description="Package Yourself",
       url='https://github.com/jeffbuttars/upkg',
       long_description=(open('README.md').read()),
