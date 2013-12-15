@@ -19,6 +19,7 @@ import sh
 from sh import git
 
 from conf import settings
+import lib.ctx as upkg_ctx
 
 sh.logging_enabled = True
 
@@ -114,6 +115,7 @@ def nice_pkg_name(name):
     logger.debug("%s", name)
 
     root, ext = os.path.splitext(name)
+    logger.debug("root :'%s', ext: '%s'", root, ext)
 
     if ext in ugly_ext:
         logger.debug("remove ext %s to get %s", ext, root)
@@ -151,8 +153,10 @@ class Repo(object):
         self._url = url
         self._basename = ""
 
-        self.supported_schemes = ('https', 'http', 'file', '')
+        self.supported_schemes = ('git', 'https', 'http', 'file', '')
 
+
+        self._ctx = upkg_ctx.get_ctx()
         self.term = Terminal()
     #__init__()
 
@@ -306,6 +310,32 @@ class Repo(object):
         p.wait()
     #clone()
 
+    def install_deps(self):
+        """todo: Docstring for install_deps
+        :return:
+        :rtype:
+        """
+        logger.debug("")
+
+        # are there an dependencies?
+        depfile = os.path.join(self.repo_dir, '_upkg', 'depends')
+        logger.debug("depfile? %s", depfile)
+        if os.path.exists(depfile):
+            logger.debug("Found depends file at %s", depfile)
+            deps = open(depfile, 'r')
+            dep = deps.readline()
+            while dep:
+                dep = dep.strip()
+                logger.debug("depends: %s", dep)
+                self._ctx.add_dep(nice_pkg_name(os.path.basename(dep)), dep)
+                dep = deps.readline()
+            deps.close()
+
+        for rep in self._ctx.deps_needed:
+            repo = Repo(url=rep)
+            repo.install()
+    #install_deps()
+
     def install(self):
         """todo: Docstring for install
         :return:
@@ -314,6 +344,8 @@ class Repo(object):
         logger.debug("")
 
         self.clone()
+        self._ctx.installed(self.name)
+        self.install_deps()
 
         logger.debug("Checking for install script")
 
