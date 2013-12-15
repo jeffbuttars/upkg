@@ -1,6 +1,6 @@
-
 # UPKG
-Manage Yourself  
+Package Yourself, a tool to help you manage repos of your personal 'scripts' like they're packages. 
+
 Use Git repos as installable program packages, just like a system package
 manager.
 
@@ -16,7 +16,7 @@ manager.
 ## Config file
 
 * It's python.
-* At ~/.config/upkg/upkg_cfg.py
+* At `~/.config/upkg/upkg_cfg.py`
 * runtime switch -c to override default
 
 ## CMDS
