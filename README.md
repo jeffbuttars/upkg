@@ -31,7 +31,7 @@ manager.
 
 ### push
 
-### q (query)
+### query
 
 ### depends
 
