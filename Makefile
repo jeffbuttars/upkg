@@ -10,4 +10,4 @@ register:
 
 .PHONY: clean
 clean:
-	rm -fr build dist pkgs.egg-info
+	rm -fr build dist pkgs.egg-info src/__pycache__
