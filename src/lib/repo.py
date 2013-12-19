@@ -58,7 +58,7 @@ def did_u_mean(name):
     """
     logger.debug("%s", name)
 
-    dlist = Repo.installed()
+    dlist = Repo.installed_list()
     res = []
     for d in dlist:
         if name in d.name or d.name in name:
@@ -259,8 +259,17 @@ class Repo(object):
 
         return self._basename
 
+    @property
+    def installed(self):
+        rd = self.repo_dir
+        if rd:
+            return os.path.exists(rd)
+
+        return rd
+    #installed()
+
     @classmethod
-    def installed(cls):
+    def installed_list(cls):
         """todo: Docstring for list
         :return:
         :rtype:
@@ -276,7 +285,23 @@ class Repo(object):
                 logger.warning("Invalid repo '%s' in the installation directory.", d)
 
         return res
-    #installed()
+    #installed_list()
+
+    def pr_pass(self, fmt, *args, **kwargs):
+        print(self.term.green(fmt.format(*args, **kwargs)))
+    #pr_pass()
+
+    def pr_info(self, fmt, *args, **kwargs):
+        print(self.term.blue(fmt.format(*args, **kwargs)))
+    #pr_info()
+
+    def pr_fail(self, fmt, *args, **kwargs):
+        print(self.term.red(fmt.format(*args, **kwargs)))
+    #pr_fail()
+
+    def pr_atten(self, fmt, *args, **kwargs):
+        print(self.term.red(fmt.format(*args, **kwargs)))
+    #pr_atten()
 
     def clone(self):
         """todo: Docstring for clone
@@ -303,21 +328,22 @@ class Repo(object):
 
         # Clone it.
         logger.debug("cloning %s into %s .", self.url, self.repo_dir)
-        print(self.term.green("\nInstalling %s ... " % self.url))
+        self.pr_pass("\nInstalling %s ... " % self.url)
 
         p = git.clone('--progress', self.url, self.repo_dir,
                       _out=self._sh_stdout('blue'), _err=self._sh_stderr('blue'))
         p.wait()
     #clone()
 
-    def install_deps(self):
-        """todo: Docstring for install_deps
+    def install_update_deps(self):
+        """todo: Docstring for install_update_deps
         :return:
         :rtype:
         """
         logger.debug("")
+        self._ctx.installed(self.name)
 
-        # are there an dependencies?
+        # are there any dependencies?
         depfile = os.path.join(self.repo_dir, '_upkg', 'depends')
         logger.debug("depfile? %s", depfile)
         if os.path.exists(depfile):
@@ -333,8 +359,11 @@ class Repo(object):
 
         for rep in self._ctx.deps_needed:
             repo = Repo(url=rep)
-            repo.install()
-    #install_deps()
+            if repo.installed:
+                repo.update()
+            else:
+                repo.install()
+    #install_update_deps()
 
     def install(self):
         """todo: Docstring for install
@@ -343,9 +372,14 @@ class Repo(object):
         """
         logger.debug("")
 
+        # If we're already installed, don't do anything.
+        if self.installed:
+            self.pr_info("pkg {} is already installed. Perhaps you want to update it?",
+                    self.name)
+            return
+
         self.clone()
-        self._ctx.installed(self.name)
-        self.install_deps()
+        self.install_update_deps()
 
         logger.debug("Checking for install script")
 
@@ -354,14 +388,14 @@ class Repo(object):
             cwd = os.getcwd()
             logger.debug("chdir to %s", os.path.join(self.repo_dir, '_upkg'))
             logger.debug("install script is %s", inst)
-            self.term.blue("Running install script at %s\n" % inst)
+            self.pr_info("Running install script at {}", inst)
             logger.debug("runnin script %s", inst)
             # We use subprocess instead of the sh module due to problems with
             # runing shell scripts with sh
             os.chdir(os.path.join(self.repo_dir, '_upkg'))
             subprocess.check_call(inst, shell=True)
             os.chdir(cwd)
-            self.term.green("install script finished")
+            self.pr_pass("install script finished")
     #install()
 
     def remove(self):
@@ -384,10 +418,11 @@ class Repo(object):
         # Is the repo out of sync(needs a push?)
 
         # Are you sure?
-        resp = input(self.term.red("Are you sure you want to remove the '%s' pkg? [y|N] "))
+        resp = input(self.term.red("Are you sure you want to remove the '%s' pkg? [y|N] " %
+                                   self.name))
 
         if resp == 'y' or resp == 'yes':
-            print(self.term.red('removing %s...' % self.name))
+            self.pr_atten('removing {}...', self.name)
             shutil.rmtree(rd)
 
     #remove()
@@ -421,12 +456,17 @@ class Repo(object):
 
         os.chdir(cwd)
 
+        # Update or install any dependancies before running the
+        # update script.
+        self.install_update_deps()
+
         up = os.path.join(self.repo_dir, '_upkg', 'update')
         if os.path.exists(up):
             # We use subprocess instead of the sh module due to problems with
             # runing shell scripts with sh
             cwd = os.getcwd()
             os.chdir(os.path.join(self.repo_dir, '_upkg'))
+            self.pr_info("Running update script for {} @ {}", self.name, up)
             subprocess.check_call(up, shell=True)
             os.chdir(cwd)
     #update()
