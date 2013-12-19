@@ -4,6 +4,7 @@ class BaseCmd(object):
 
     name = 'wonk'
     help_text = ("wonk it")
+    aliases = []
 
     def __init__(self, sub_parser):
         """todo: to be defined
@@ -13,7 +14,9 @@ class BaseCmd(object):
         """
         self._sub_parser = sub_parser
         self._cmd_parser = self._sub_parser.add_parser(
-            self.name, help=self.help_text,
+            self.name,
+            help=self.help_text,
+            aliases=self.aliases,
         )
     #__init__()
 

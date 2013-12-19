@@ -8,7 +8,7 @@ logger = logging.getLogger('upkg')
 cmd_logger = logging.getLogger('command')
 # Use a console handler, set it to debug by default
 logger_ch = logging.StreamHandler()
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 log_formatter = logging.Formatter(('%(asctime)s %(levelname)s:%(process)s'
                                    ' %(lineno)s:%(module)s:%(funcName)s()'
                                    ' %(message)s'))
@@ -16,6 +16,7 @@ logger_ch.setFormatter(log_formatter)
 logger.addHandler(logger_ch)
 
 
+import sys
 import argparse
 # import tornado.ioloop
 
@@ -58,23 +59,29 @@ parser.add_argument('-c',
 def main():
     # Install our own IOLoop instance
     # UpkgIOLoop().install()
+    print("raw args: %s" % sys.argv)
+    print("parser %s" % dir(parser))
 
     # Sub parsers.
     sub_parser = parser.add_subparsers(help=("upkg commands"))
     cmds.build_cmds(sub_parser)
 
-    args = parser.parse_args()
+    print("parsing args")
+    args = parser.parse_known_args()
+    print("known args: %s" % args)
     if args.debug:
         logger.setLevel(logging.DEBUG)
         cmd_logger.setLevel(logging.DEBUG)
 
     logger.debug("args: %s", args)
 
+    print("loading conf")
     import conf
     conf.load_settings(args.config)
 
     logger.debug("settings: %s", conf.settings)
 
+    print("checking command")
     if hasattr(args, 'func'):
         return args.func(args)
 

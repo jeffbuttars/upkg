@@ -3,9 +3,6 @@ logger = logging.getLogger('upkg')
 
 import os
 
-from sh import git
-from urllib.parse import urlparse
-
 from cmds.base import BaseCmd
 from conf import settings
 from lib import Repo
@@ -16,6 +13,7 @@ class Cmd(BaseCmd):
 
     name = 'install'
     help_text = ("install upkg")
+    aliases = ['i', 'in', 'ins', 'inst', 'insta', 'instal']
 
     def build(self):
         """todo: Docstring for build
@@ -41,7 +39,6 @@ class Cmd(BaseCmd):
         :return:
         :rtype:
         """
-
 
         # make sure the destination dir exists.
         if not os.path.exists(settings.upkg_destdir):

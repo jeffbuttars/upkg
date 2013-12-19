@@ -12,6 +12,7 @@ class Cmd(BaseCmd):
 
     name = 'status'
     help_text = ("Get the status of what's installed")
+    aliases = ['s', 'st', 'sta', 'stat', 'statu']
 
     def build(self):
         """todo: Docstring for build

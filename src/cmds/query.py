@@ -10,6 +10,7 @@ class Cmd(BaseCmd):
 
     name = 'query'
     help_text = ("Advanced quering")
+    aliases = ['q', 'qu', 'que', 'quer']
 
     def build(self):
         """todo: Docstring for build
