@@ -17,6 +17,8 @@ logger.addHandler(logger_ch)
 
 
 import argparse
+import os
+import shutil
 # import tornado.ioloop
 
 # from lib import Search, Install
@@ -71,7 +73,11 @@ def main():
     logger.debug("args: %s", args)
 
     import conf
-    conf.load_settings(args.config)
+    settings = conf.load_settings(args.config)
+
+    # make sure the db directory exists
+    if not os.path.exists(settings.dbs_path):
+        shutil.os.makedirs(settings.dbs_path)
 
     logger.debug("settings: %s", conf.settings)
 

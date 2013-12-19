@@ -4,7 +4,6 @@ logger = logging.getLogger('upkg')
 import os
 
 from cmds.base import BaseCmd
-from conf import settings
 from lib import Repo
 
 
@@ -41,8 +40,8 @@ class Cmd(BaseCmd):
         """
 
         # make sure the destination dir exists.
-        if not os.path.exists(settings.upkg_destdir):
-            os.makedirs(settings.upkg_destdir)
+        if not os.path.exists(self.settings.upkg_destdir):
+            os.makedirs(self.settings.upkg_destdir)
 
         repo = Repo(url=repo)
         repo.install()

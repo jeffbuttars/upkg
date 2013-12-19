@@ -1,3 +1,5 @@
+from conf import settings
+
 
 class BaseCmd(object):
     """Docstring for Search """
@@ -18,6 +20,9 @@ class BaseCmd(object):
             help=self.help_text,
             aliases=self.aliases,
         )
+
+
+        self.settings = settings
     #__init__()
 
     def build(self):

@@ -22,8 +22,13 @@ def _clean_path(p):
 
 # Set config defaults
 _config = {
+
+    "cfg_dir_path": _clean_path("~/.config/upkg"),
     # Default path to config file.
-    "cfg_path": _clean_path("~/.config/upkg/upkg_cfg.py"),
+    "cfg_file_path": _clean_path("~/.config/upkg/upkg_cfg.py"),
+
+    # State and history database
+    "dbs_path": _clean_path("~/.config/upkg/db"),
 
     # The install destination directory
     'upkg_destdir': _clean_path('~/.upkg'),
@@ -36,23 +41,23 @@ _config = {
 settings = Namespace(**_config)
 
 
-def load_settings(cfg_path=None):
+def load_settings(cfg_file_path=None):
     """todo: Docstring for load_settings
 
-    :param cfg_path: arg description
-    :type cfg_path: type description
+    :param cfg_file_path: arg description
+    :type cfg_file_path: type description
     :return:
     :rtype:
     """
 
     global settings
 
-    cfg_path = cfg_path or _config['cfg_path']
+    cfg_file_path = cfg_file_path or _config['cfg_file_path']
 
     cfg_d = _config.copy()
 
-    if os.path.exists(cfg_path):
-        sfl = SourceFileLoader('upkg_cfg', cfg_path)
+    if os.path.exists(cfg_file_path):
+        sfl = SourceFileLoader('upkg_cfg', cfg_file_path)
         cfg_mod = sfl.load_module()
 
         for m in inspect.getmembers(cfg_mod):
@@ -61,8 +66,10 @@ def load_settings(cfg_path=None):
         # end for m in inspect.getme
 
     # Make the paths absolute.
-    cfg_d["cfg_path"] = _clean_path(cfg_d["cfg_path"])
+    cfg_d["cfg_file_path"] = _clean_path(cfg_d["cfg_file_path"])
     cfg_d["upkg_destdir"] = _clean_path(cfg_d["upkg_destdir"])
 
     settings = Namespace(**cfg_d)
+
+    return settings
 #load_settings()

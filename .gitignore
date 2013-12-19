@@ -2,3 +2,4 @@
 .requirements.txt.bak
 .venv/
 *.pyc
+*.pyo

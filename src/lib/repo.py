@@ -14,9 +14,9 @@ from blessings import Terminal
 
 import shutil
 from urllib.parse import urlparse
-from pprint import pformat as pf
 import sh
 from sh import git
+from peewee import SqliteDatabase
 
 from conf import settings
 import lib.ctx as upkg_ctx
@@ -155,9 +155,12 @@ class Repo(object):
 
         self.supported_schemes = ('git', 'https', 'http', 'file', '')
 
-
         self._ctx = upkg_ctx.get_ctx()
         self.term = Terminal()
+
+        # open or create a db for this repo.
+        self._db = SqliteDatabase(os.path.join(settings.dbs_path, self.name + ".db"))
+        self._db.connect()
     #__init__()
 
     def __repr__(self):
