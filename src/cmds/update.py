@@ -56,7 +56,7 @@ class Cmd(BaseCmd):
             rlist = [Repo(name=x) for x in repos]
         else:
             # Update them all!
-            rlist = Repo.installed()
+            rlist = Repo.installed_list()
 
         logger.debug("repo list: %s", rlist)
 

@@ -41,7 +41,7 @@ class Cmd(BaseCmd):
 
         logger.debug("query %s", args.query)
 
-        pl = Repo.installed()
+        pl = Repo.installed_list()
         if not pl:
             print("No packages installed, use 'upkg install'")
 
