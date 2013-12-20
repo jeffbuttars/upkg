@@ -1,4 +1,5 @@
 import os
+import uuid
 import inspect
 from argparse import Namespace
 from importlib.machinery import SourceFileLoader
@@ -23,12 +24,14 @@ def _clean_path(p):
 # Set config defaults
 _config = {
 
+    "ctx_id": str(uuid.uuid4()),
     "cfg_dir_path": _clean_path("~/.config/upkg"),
     # Default path to config file.
     "cfg_file_path": _clean_path("~/.config/upkg/upkg_cfg.py"),
 
     # State and history database
     "dbs_path": _clean_path("~/.config/upkg/db"),
+    "db_name": "upkg",
 
     # The install destination directory
     'upkg_destdir': _clean_path('~/.upkg'),
