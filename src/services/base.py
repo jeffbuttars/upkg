@@ -3,16 +3,20 @@ logger = logging.getLogger('upkg')
 
 import os
 import json
+from pprint import pformat as pf
 import tornado
 import tornado.ioloop
 from tornado.httpclient import AsyncHTTPClient, HTTPClient as SyncHttpClient
 from tornado.httputil import url_concat
 
+import services
 
-class RepoBase(object):
+
+class ServiceBase(object):
 
     api_ver = '1'
     api_base_url = 'https://example.com/api/v' + api_ver
+    name = 'service_base'
 
     def __init__(self, api_ver=None, api_base_url=None,
                  http_client_args=[], http_client_kwargs={}
@@ -24,6 +28,8 @@ class RepoBase(object):
         :param api_base_url: arg description
         :type api_base_url: type description
         """
+        logger.debug("initializing %s service", self.name)
+
         self._api_ver = api_ver or ''
         self._api_base_url = api_base_url or ''
 
@@ -36,6 +42,14 @@ class RepoBase(object):
         else:
             self._hc = SyncHttpClient(*http_client_args, **http_client_kwargs)
     #__init__()
+
+    def __str__(self):
+        """todo: Docstring for __str__
+        :return:
+        :rtype:
+        """
+        return self.name
+    #__str__()
 
     def search(self, term):
         """todo: Docstring for search
@@ -89,4 +103,40 @@ class RepoBase(object):
 
         return json.loads(resp.body.decode("utf-8"))
     #get_json()
-#RepoBase
+#ServiceBase
+
+
+class ServiceResponse(object):
+    def __init__(self, service, resp_dict):
+        """todo: to be defined
+
+        :param resp_dict: arg description
+        :type resp_dict: type description
+        """
+        self._resp_dict = resp_dict
+        self.name = "N/A"
+        self.url = "N/A"
+
+        for k, v in resp_dict.items():
+            setattr(self, k, v)
+        # end for k, v in resp_dict
+    #__init__()
+
+    def __str__(self):
+        """todo: Docstring for __str__
+        :return:
+        :rtype:
+        """
+        resp = ("{} {}").format(self.name, self.url)
+
+        return resp
+    #__str__()
+
+    def __repr__(self):
+        """todo: Docstring for __repr__
+        :return:
+        :rtype:
+        """
+        return self.__str__()
+    #__repr__()
+#ServiceResponse

@@ -11,6 +11,7 @@ class Cmd(BaseCmd):
 
     name = 'remove'
     help_text = ("remove installed pkg(s)")
+    aliases = ['r', 're', 'rem', 'remo', 'remov']
 
     def build(self):
         """todo: Docstring for build

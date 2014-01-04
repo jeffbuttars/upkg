@@ -2,15 +2,15 @@ import logging
 logger = logging.getLogger('upkg')
 
 import os
-import sys
 import subprocess
+import sqlite3
 
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
 
-from blessings import Terminal
+import lib
 
 import shutil
 from urllib.parse import urlparse
@@ -156,11 +156,14 @@ class Repo(object):
         self.supported_schemes = ('git', 'https', 'http', 'file', '')
 
         self._ctx = upkg_ctx.get_ctx()
-        self.term = Terminal()
+        self.term = lib.Term()
 
         # open or create a db for this repo.
-        self._db = SqliteDatabase(os.path.join(settings.dbs_path, self.name + ".db"))
-        self._db.connect()
+        try:
+            self._db = SqliteDatabase(os.path.join(settings.dbs_path, self.name + ".db"))
+            self._db.connect()
+        except sqlite3.OperationalError as e: 
+            logger.debug("Unable to use the database:\n%s", e)
     #__init__()
 
     def __repr__(self):
@@ -176,27 +179,24 @@ class Repo(object):
         )
     #__repr__()
 
-    def _build_writer(self, output, color=None, prefix=""):
-        if color:
+    def _sh_stdout(self, color=None, prefix=""):
+        out_fn = self.term.c_stdout(color)
 
-            def _cwriter(line):
-                go = getattr(self.term, color)
-                output(go(self.name + ": " + prefix + line))
+        def _sout(fmt, *args, **kwargs):
+            out_fn(self.name + ": " + prefix + fmt, *args, **kwargs)
+        #_sout()
 
-            return _cwriter
-
-        def _writer(line):
-            output(self.name + ": " + prefix + line)
-
-        return _writer
-    #_build_writer()
-
-    def _sh_stdout(self, *args, **kwargs):
-        return self._build_writer(sys.stdout.write, *args, **kwargs)
+        return _sout
     #_sh_stdout()
 
-    def _sh_stderr(self, *args, **kwargs):
-        return self._build_writer(sys.stderr.write, *args, **kwargs)
+    def _sh_stderr(self, color=None, prefix=""):
+        out_fn = self.term.c_stderr(color)
+
+        def _serr(fmt, *args, **kwargs):
+            out_fn(self.name + ": " + prefix + fmt, *args, **kwargs)
+        #_serr()
+
+        return _serr
     #_sh_stderr()
 
     def __str__(self):
@@ -290,22 +290,6 @@ class Repo(object):
         return res
     #installed_list()
 
-    def pr_pass(self, fmt, *args, **kwargs):
-        print(self.term.green(fmt.format(*args, **kwargs)))
-    #pr_pass()
-
-    def pr_info(self, fmt, *args, **kwargs):
-        print(self.term.blue(fmt.format(*args, **kwargs)))
-    #pr_info()
-
-    def pr_fail(self, fmt, *args, **kwargs):
-        print(self.term.red(fmt.format(*args, **kwargs)))
-    #pr_fail()
-
-    def pr_atten(self, fmt, *args, **kwargs):
-        print(self.term.red(fmt.format(*args, **kwargs)))
-    #pr_atten()
-
     def clone(self):
         """todo: Docstring for clone
         :return:
@@ -331,7 +315,7 @@ class Repo(object):
 
         # Clone it.
         logger.debug("cloning %s into %s .", self.url, self.repo_dir)
-        self.pr_pass("\nInstalling %s ... " % self.url)
+        self.term.pr_ok("\nInstalling %s ... " % self.url)
 
         p = git.clone('--progress', self.url, self.repo_dir,
                       _out=self._sh_stdout('blue'), _err=self._sh_stderr('blue'))
@@ -377,7 +361,7 @@ class Repo(object):
 
         # If we're already installed, don't do anything.
         if self.installed:
-            self.pr_info("pkg {} is already installed. Perhaps you want to update it?",
+            self.term.pr_info("pkg {} is already installed. Perhaps you want to update it?",
                     self.name)
             return
 
@@ -391,14 +375,14 @@ class Repo(object):
             cwd = os.getcwd()
             logger.debug("chdir to %s", os.path.join(self.repo_dir, '_upkg'))
             logger.debug("install script is %s", inst)
-            self.pr_info("Running install script at {}", inst)
+            self.term.pr_info("Running install script at {}", inst)
             logger.debug("runnin script %s", inst)
             # We use subprocess instead of the sh module due to problems with
             # runing shell scripts with sh
             os.chdir(os.path.join(self.repo_dir, '_upkg'))
             subprocess.check_call(inst, shell=True)
             os.chdir(cwd)
-            self.pr_pass("install script finished")
+            self.term.pr_ok("install script finished")
     #install()
 
     def remove(self):
@@ -421,11 +405,14 @@ class Repo(object):
         # Is the repo out of sync(needs a push?)
 
         # Are you sure?
-        resp = input(self.term.red("Are you sure you want to remove the '%s' pkg? [y|N] " %
-                                   self.name))
+        # resp = input(self.term.red("Are you sure you want to remove the '%s' pkg? [y|N] " %
+        #                            self.name))
+        resp = input(self.term.red(
+            "Are you sure you want to remove the '{}' pkg? [y|N] ",
+            self.name))
 
         if resp == 'y' or resp == 'yes':
-            self.pr_atten('removing {}...', self.name)
+            self.term.pr_atten('removing {}...', self.name)
             shutil.rmtree(rd)
 
     #remove()
@@ -469,7 +456,7 @@ class Repo(object):
             # runing shell scripts with sh
             cwd = os.getcwd()
             os.chdir(os.path.join(self.repo_dir, '_upkg'))
-            self.pr_info("Running update script for {} @ {}", self.name, up)
+            self.term.pr_info("Running update script for {} @ {}", self.name, up)
             subprocess.check_call(up, shell=True)
             os.chdir(cwd)
     #update()

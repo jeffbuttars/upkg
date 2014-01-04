@@ -25,16 +25,12 @@ import shutil
 # from lib import UpkgIOLoop
 
 import cmds
+import services
 
 parser = argparse.ArgumentParser(
     "upkg",
     description=("Package Yourself")
 )
-
-# parser.add_argument('-t', '--test',
-#                     default='default_value',
-#                     help=("Some nice help for this option")
-#                     )
 
 parser.add_argument('-d',
                     '--debug',
@@ -48,18 +44,13 @@ parser.add_argument('-c',
                     help=("Specify a config file location.")
                     )
 
-# # positional argument
-# parser.add_argument('search',
-#                     default=None,
-#                     # nargs="?",
-#                     nargs=1,
-#                     help=("Search for a package/repo by name")
-#                     )
-
 
 def main():
     # Install our own IOLoop instance
     # UpkgIOLoop().install()
+
+    # register our services
+    services.register_services()
 
     # Sub parsers.
     sub_parser = parser.add_subparsers(help=("upkg commands"))
