@@ -1,3 +1,5 @@
+CodernityDB==0.4.2
 blessings==1.5.1
 peewee==2.1.6
 sh==1.09
+tornado==3.1.1
