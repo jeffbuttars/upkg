@@ -62,6 +62,51 @@ class Cmd(BaseCmd):
             help=("Limit the search repos having at least a given popularity rating.")
         )
 
+        self._cmd_parser.add_argument(
+            '--created',
+            default=None,
+            help=("Limit the search repos based on when they were created. "
+                  "the format of YYYY-MM-DD--that's year, followed by month, followed by day."
+                  "You can"
+                  "continue to use < to refer to \"before a date,\" and > as after a date. For"
+                  "example:\n\n"
+                  "webos created:<2011-01-01\n"
+                  "Matches repositories with the word \"webos\" that were created before 2011\n"
+                  "css pushed:<2013-02-01"
+                  "Matches repositories with the word \"css\" that were pushed to "
+                  "before February 2013"
+                  "case pushed:>=2013-03-06 fork:only"
+                  "Matches repositories with the word \"case\" that were pushed to on or "
+                  "after March 6th, 2013, and that are forks"
+                  )
+        )
+
+        self._cmd_parser.add_argument(
+            '--push',
+            default=None,
+            help=("Limit the search repos based on when they were created. "
+                  "the format of YYYY-MM-DD--that's year, followed by month, followed by day."
+                  "You can"
+                  "continue to use < to refer to \"before a date,\" and > as after a date. For"
+                  "example:\n\n"
+                  "webos created:<2011-01-01\n"
+                  "Matches repositories with the word \"webos\" that were created before 2011\n"
+                  "css pushed:<2013-02-01"
+                  "Matches repositories with the word \"css\" that were pushed to "
+                  "before February 2013"
+                  "case pushed:>=2013-03-06 fork:only"
+                  "Matches repositories with the word \"case\" that were pushed to on or "
+                  "after March 6th, 2013, and that are forks"
+                  )
+        )
+
+        self._cmd_parser.add_argument(
+            '-a',
+            '--available',
+            default=False, action='store_true',
+            help=("List the available services for upkg")
+        )
+
         return super(Cmd, self).build()
     #build()
 
@@ -76,14 +121,34 @@ class Cmd(BaseCmd):
 
         logger.debug("search, %s services available", len(services.get_services()))
 
+        term = lib.Term()
+
+        if args.available:
+            term.pr_info("Available services:")
+            for serv in services.get_services():
+                servi = serv()
+                term.pr_ok("\t{}", servi.name)
+            return
+
+        kwargs = {
+            'user': args.user,
+            'repo': args.repo,
+            'lang': args.language,
+            'pop': args.popularity,
+        }
+
         results = []
         for serv in services.get_services():
             servi = serv()
+            if args.service and args.service != servi.name:
+                logger.debug("limiting service to %s, skipping service %s",
+                             args.service, servi.name)
+                continue
+
             logger.debug("searchin for %s in service %s", args.search, servi)
-            results += servi.search(' '.join(args.search))
+            results += servi.search(' '.join(args.search), **kwargs)
         # end for serv in lib.services
 
-        term = lib.Term()
         padding = len(str(len(results)))
         i = 1
         for r in results:

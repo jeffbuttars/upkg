@@ -3,7 +3,6 @@ logger = logging.getLogger('upkg')
 
 import os
 import subprocess
-import sqlite3
 
 try:
     from StringIO import StringIO
@@ -16,7 +15,6 @@ import shutil
 from urllib.parse import urlparse
 import sh
 from sh import git
-from peewee import SqliteDatabase
 
 from conf import settings
 import lib.ctx as upkg_ctx
@@ -157,13 +155,6 @@ class Repo(object):
 
         self._ctx = upkg_ctx.get_ctx()
         self.term = lib.Term()
-
-        # open or create a db for this repo.
-        try:
-            self._db = SqliteDatabase(os.path.join(settings.dbs_path, self.name + ".db"))
-            self._db.connect()
-        except sqlite3.OperationalError as e: 
-            logger.debug("Unable to use the database:\n%s", e)
     #__init__()
 
     def __repr__(self):

@@ -3,13 +3,12 @@ logger = logging.getLogger('upkg')
 
 import os
 import json
-from pprint import pformat as pf
 import tornado
 import tornado.ioloop
 from tornado.httpclient import AsyncHTTPClient, HTTPClient as SyncHttpClient
 from tornado.httputil import url_concat
 
-import services
+import lib
 
 
 class ServiceBase(object):
@@ -41,6 +40,8 @@ class ServiceBase(object):
             self._hc = AsyncHTTPClient(*http_client_args, **http_client_kwargs)
         else:
             self._hc = SyncHttpClient(*http_client_args, **http_client_kwargs)
+
+        self.term = lib.Term()
     #__init__()
 
     def __str__(self):
@@ -51,7 +52,14 @@ class ServiceBase(object):
         return self.name
     #__str__()
 
-    def search(self, term):
+    def search(
+        self,
+        term,
+        user=None,
+        repo=None,
+        lang=None,
+        pop=None,
+    ):
         """todo: Docstring for search
 
         :param term: arg description
@@ -85,7 +93,8 @@ class ServiceBase(object):
         kwargs['headers'] = headers
 
         logger.debug("GET ing %s %s", url, kwargs)
-        return self._hc.fetch(url, method='GET', **kwargs)
+        resp = self._hc.fetch(url, method='GET', **kwargs)
+        return resp
     #get()
 
     def get_json(self, *args, **kwargs):
@@ -101,7 +110,7 @@ class ServiceBase(object):
 
         resp = self.get(*args, **kwargs)
 
-        return json.loads(resp.body.decode("utf-8"))
+        return (json.loads(resp.body.decode("utf-8")), resp)
     #get_json()
 #ServiceBase
 

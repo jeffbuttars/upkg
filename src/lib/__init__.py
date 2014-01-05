@@ -10,7 +10,7 @@ class Term(object):
 
     def pr(self, fmt, *args, **kwargs):
         """todo: Docstring for pr
-        
+
         :param arg1: arg description
         :type arg1: type description
         :return:

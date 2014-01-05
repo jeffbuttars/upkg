@@ -2,7 +2,11 @@ import logging
 logger = logging.getLogger('upkg')
 
 import os
+import time
+import datetime
 import urllib.parse
+import tornado.httpclient
+
 from services.base import ServiceBase, ServiceResponse
 import services
 
@@ -43,7 +47,31 @@ class GithubService(ServiceBase):
             'method': 'GET',
             'ep': "/search/repositories"
         }
+
+        self._default_params = {
+            'per_page': 100,
+        }
     #__init__()
+
+    def add_search_qual(self, term, qname, quals):
+        """todo: Docstring for add_search_qual
+
+        :param term: arg description
+        :type term: type description
+        :param quals: arg description
+        :type quals: type description
+        :return:
+        :rtype:
+        """
+
+        logger.debug("term: %s, qname: %s, quals: %s",
+                     term, qname, quals)
+
+        if not quals:
+            return term
+
+        return "{}+{}:{}".format(term, qname, quals)
+    #add_search_qual()
 
     def search(self, term,
                sort=None,
@@ -55,8 +83,8 @@ class GithubService(ServiceBase):
                pushed=None,
                user=None,
                repo=None,
-               language=None,
-               stars=None,
+               lang=None,
+               pop=None,
                ):
         """todo: Docstring for search
 
@@ -85,8 +113,35 @@ class GithubService(ServiceBase):
         :return:
         :rtype:
         """
-        logger.debug("github search for '%s'", term)
+        logger.debug(("github search for '%s' "
+                      "sort: %s"
+                      "order: %s"
+                      "s_in: %s"
+                      "size: %s"
+                      "forks: %s"
+                      "created: %s"
+                      "pushed: %s"
+                      "user: %s"
+                      "repo: %s"
+                      "lang: %s"
+                      "pop: %s"
+                     ),
+                     term,
+                     sort,
+                     order,
+                     s_in,
+                     size,
+                     forks,
+                     created,
+                     pushed,
+                     user,
+                     repo,
+                     lang,
+                     pop,
+                    )
 
+        orig_term = term
+        term = urllib.parse.quote_plus(term)
         s_order = order or 'desc'
         if s_order not in ('asc', 'desc'):
             s_order = order or 'desc'
@@ -95,14 +150,41 @@ class GithubService(ServiceBase):
             if sort not in ('stars', 'forks', 'updated'):
                 sort = ''
 
+        term = self.add_search_qual(term, 's_in', s_in)
+        term = self.add_search_qual(term, 'size', size)
+        term = self.add_search_qual(term, 'forks', forks)
+        term = self.add_search_qual(term, 'created', created)
+        term = self.add_search_qual(term, 'pushed', pushed)
+        term = self.add_search_qual(term, 'user', user)
+        term = self.add_search_qual(term, 'repo', repo)
+        term = self.add_search_qual(term, 'language', lang)
+        term = self.add_search_qual(term, 'stars', pop)
+
         ep = os.path.join("search", "repositories")
-        params = {
-            'q': urllib.parse.quote_plus(term),
-        }
+        params = self._default_params.copy()
+        params['q'] = term
 
-        resp = self.get_json(ep, params=params)
+        try:
+            resp_obj, resp = self.get_json(ep, params=params)
 
-        return [GihubResponse(self, x) for x in resp['items']]
+            limit = resp.headers.get('X-RateLimit-Limit', '')
+            remaining = resp.headers.get('X-RateLimit-Remaining', '')
+            limit_reset = resp.headers.get('X-RateLimit-Reset', '')
+            l_res = datetime.datetime.strptime(
+                time.ctime(
+                    int(limit_reset)), "%a %b %d %H:%M:%S %Y")
+            now = datetime.datetime.strptime(time.ctime(), "%a %b %d %H:%M:%S %Y")
+
+            self.term.pr_info("API Request Limit, {} of {} Remaining, Resets in {} seconds\n",
+                              remaining, limit, (l_res - now).seconds)
+
+        except tornado.httpclient.HTTPError as e:
+            if e.code == 422:
+                self.term.pr_fail("Search for '{}' returned no results", orig_term)
+
+            return []
+
+        return [GihubResponse(self, x) for x in resp_obj['items']]
     #search()
 #GithubService
 

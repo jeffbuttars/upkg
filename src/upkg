@@ -19,6 +19,8 @@ logger.addHandler(logger_ch)
 import argparse
 import os
 import shutil
+import sqlite3
+from peewee import SqliteDatabase
 # import tornado.ioloop
 
 # from lib import Search, Install
@@ -65,6 +67,13 @@ def main():
 
     import conf
     settings = conf.load_settings(args.config)
+
+    # open or create a the db
+    try:
+        _db = SqliteDatabase(os.path.join(settings.dbs_path, "upkg.db"))
+        _db.connect()
+    except sqlite3.OperationalError as e:
+        logger.error("Unable to use the database:\n%s", e)
 
     # make sure the db directory exists
     if not os.path.exists(settings.dbs_path):
