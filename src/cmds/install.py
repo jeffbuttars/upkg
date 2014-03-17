@@ -29,10 +29,17 @@ class Cmd(BaseCmd):
             help=(""),
         )
 
+        self._cmd_parser.add_argument(
+            '-l',
+            '--location',
+            default=None,
+            help=("Specify the installation location. ")
+        )
+
         return super(Cmd, self).build()
     #build()
 
-    def install_repo(self, repo):
+    def install_repo(self, repo, location=location):
         """todo: Docstring for install_repo
         :param repo: arg description
         :type repo: type description
@@ -40,11 +47,13 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
-        # make sure the destination dir exists.
-        if not os.path.exists(settings.upkg_destdir):
-            os.makedirs(settings.upkg_destdir)
+        dst = location or settings.upkg_destdir
 
-        repo = Repo(url=repo)
+        # make sure the destination dir exists.
+        if not os.path.exists(dst):
+            os.makedirs(dst)
+
+        repo = Repo(url=repo, repo_dir=dst)
         repo.install()
 
         return repo
@@ -59,10 +68,16 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
-        logger.debug("install %s", args.install)
+        logger.debug("install %s, location %s", args.install, args.location)
+        location = args.location and os.path.abspath(args.location)
+
+        if location and len(args) > 1:
+            raise Exception(("You cannot specify multiple install packages when "
+                             "using the --location option."
+                            ))
 
         for repo in args.install:
-            self.install_repo(repo)
+            self.install_repo(repo, location)
         # end for repo in args.install
     #exec()
 #repo Cmd
