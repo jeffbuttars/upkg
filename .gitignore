@@ -1,4 +1,6 @@
 
 .requirements.txt.bak
 .venv/
+upkg.egg-info/
+dist/
 *.pyc
