@@ -39,7 +39,7 @@ class Cmd(BaseCmd):
         return super(Cmd, self).build()
     #build()
 
-    def install_repo(self, repo, location=location):
+    def install_repo(self, repo, location=''):
         """todo: Docstring for install_repo
         :param repo: arg description
         :type repo: type description
