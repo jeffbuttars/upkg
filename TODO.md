@@ -16,3 +16,4 @@
 * Cmd aliases
 * 'goto' command, take user to the pkg dir and run a shell there.
 * Delayed messages. Allow pkg scripts to relay messages back to upkg that can be displayed after all packages have been installed
+* Allow pkg updates without updating dependancies. Perhaps this should be default? and updating deps is an option?
