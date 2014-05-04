@@ -247,7 +247,7 @@ class Repo(object):
 
     @property
     def basename(self):
-        logger.debug("basename: %s", self._basename)
+        logger.debug("basename: %s, repo_dir: %s", self._basename, self._repo_dir)
 
         if self._repo_dir:
             self._basename = os.path.basename(self._repo_dir)
