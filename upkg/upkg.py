@@ -9,20 +9,24 @@ cmd_logger = logging.getLogger('command')
 # Use a console handler, set it to debug by default
 logger_ch = logging.StreamHandler()
 logger.setLevel(logging.INFO)
-log_formatter = logging.Formatter(('%(asctime)s %(levelname)s:%(process)s'
+log_formatter = logging.Formatter(
+    ('%(asctime)s %(levelname)s:%(process)s'
                                    ' %(lineno)s:%(module)s:%(funcName)s()'
-                                   ' %(message)s'))
+                                   ' %(message)s')
+)
 logger_ch.setFormatter(log_formatter)
 logger.addHandler(logger_ch)
 
+import sys
+import os
+
+if __name__ == '__main__':
+    this_dir = os.path.realpath(os.path.dirname(__file__))
+    sys.path.insert(0, os.path.abspath(os.path.join(this_dir, "../")))
+    # print(sys.path)
 
 import argparse
-# import tornado.ioloop
-
-# from lib import Search, Install
-# from lib import UpkgIOLoop
-
-import cmds
+from upkg import cmds
 
 parser = argparse.ArgumentParser(
     "upkg",
@@ -46,19 +50,8 @@ parser.add_argument('-c',
                     help=("Specify a config file location.")
                     )
 
-# # positional argument
-# parser.add_argument('search',
-#                     default=None,
-#                     # nargs="?",
-#                     nargs=1,
-#                     help=("Search for a package/repo by name")
-#                     )
-
-
 def main():
-    # Install our own IOLoop instance
-    # UpkgIOLoop().install()
-
+    print(sys.path)
     # Sub parsers.
     sub_parser = parser.add_subparsers(help=("upkg commands"))
     cmds.build_cmds(sub_parser)
@@ -77,7 +70,6 @@ def main():
 
     if hasattr(args, 'func'):
         return args.func(args)
-
     parser.print_help()
 # main()
 

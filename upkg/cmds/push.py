@@ -1,11 +1,11 @@
-from cmds.base import BaseCmd
+from upkg.cmds.base import BaseCmd
 
 
 class Cmd(BaseCmd):
     """Docstring for Search """
 
-    name = 'depends'
-    help_text = ("list a packages dependencies")
+    name = 'push'
+    help_text = ("push package changes back")
 
     def build(self):
         """todo: Docstring for build

@@ -2,8 +2,8 @@ import logging
 logger = logging.getLogger('upkg')
 
 
-from cmds.base import BaseCmd
-from lib import Repo
+from upkg.cmds.base import BaseCmd
+from upkg.lib import Repo
 
 
 class Cmd(BaseCmd):

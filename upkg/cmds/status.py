@@ -1,16 +1,18 @@
 import logging
 logger = logging.getLogger('upkg')
 
-from cmds.base import BaseCmd
-from lib import Repo
+from blessings import Terminal
+
+from upkg.cmds.base import BaseCmd
+from upkg.lib import Repo
 
 
 class Cmd(BaseCmd):
     """Docstring for Search """
 
-    name = 'update'
-    help_text = ("update all or some upkg")
-    aliases = ['u', 'up', 'upd', 'upda', 'updat']
+    name = 'status'
+    help_text = ("Get the status of what's installed")
+    aliases = ['s', 'st', 'sta', 'stat', 'statu']
 
     def build(self):
         """todo: Docstring for build
@@ -19,7 +21,7 @@ class Cmd(BaseCmd):
         """
 
         self._cmd_parser.add_argument(
-            'update',
+            'status',
             type=str,
             default=None,
             nargs="*",
@@ -38,11 +40,11 @@ class Cmd(BaseCmd):
         :rtype:
         """
 
-        logger.debug("update %s", args.update)
-        self.update(args.update) 
+        logger.debug("status %s", args.status)
+        self.status(args.status)
     #exec()
 
-    def update(self, repos):
+    def status(self, repos):
         """
 
         :param repos: arg description
@@ -60,9 +62,25 @@ class Cmd(BaseCmd):
 
         logger.debug("repo list: %s", rlist)
 
+        t = Terminal()
         for r in rlist:
-            logger.debug("calling update on: %s", r)
-            r.update()
+            logger.debug("calling status on: %s", r)
+            rp = r.repo_dir
+
+            rpw = len(rp)
+            w = t.width
+            bw = int(((w - rpw) / 2) - 1)
+            nw = int(((w - len(r.name)) / 2) - 1)
+            print(t.magenta("*" * w))
+            print(t.magenta("{} {} {}".format(" " * nw, r.name, " " * nw)))
+            if (rpw + 2) < w:
+                print(t.magenta("{} {} {}".format(" " * bw, rp, " " * bw)))
+            else:
+                print(t.magenta(rpw))
+            print(t.magenta("*" * w))
+
+            r.status()
+            print("\n")
         # end for r in rlist
-    #update()
+    #status()
 # Cmd

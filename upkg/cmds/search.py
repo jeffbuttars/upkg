@@ -1,11 +1,11 @@
-from cmds.base import BaseCmd
+from upkg.cmds.base import BaseCmd
 
 
 class Cmd(BaseCmd):
     """Docstring for Search """
 
-    name = 'provides'
-    help_text = ("find what upkg provides what file")
+    name = 'search'
+    help_text = ("search for upkg")
 
     def build(self):
         """todo: Docstring for build
@@ -14,12 +14,12 @@ class Cmd(BaseCmd):
         """
 
         # self._cmd_parser.add_argument(
-        #     's',
+        #     'search',
         #     type=str,
         #     default=None,
         #     # nargs="?",
         #     nargs=1,
-        #     help=(""),
+        #     help=("Search for a package/repo by name"),
         # )
 
         return super(Cmd, self).build()
