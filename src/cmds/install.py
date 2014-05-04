@@ -13,7 +13,7 @@ class Cmd(BaseCmd):
 
     name = 'install'
     help_text = ("install upkg")
-    aliases = ['i', 'in', 'ins', 'inst', 'insta', 'instal']
+    aliases = ['i']
 
     def build(self):
         """todo: Docstring for build
@@ -37,7 +37,7 @@ class Cmd(BaseCmd):
         )
 
         return super(Cmd, self).build()
-    #build()
+    # build()
 
     def install_repo(self, repo, location=''):
         """todo: Docstring for install_repo
