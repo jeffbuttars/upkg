@@ -37,7 +37,6 @@ class Cmd(BaseCmd):
         )
 
         return super(Cmd, self).build()
-    # build()
 
     def install_repo(self, repo, location=''):
         """todo: Docstring for install_repo
@@ -58,7 +57,6 @@ class Cmd(BaseCmd):
         repo.install()
 
         return repo
-    # install_repo()
 
     def exec(self, args):
         """todo: Docstring for exec
@@ -79,6 +77,3 @@ class Cmd(BaseCmd):
 
         for repo in args.install:
             self.install_repo(repo, location)
-        # end for repo in args.install
-    #exec()
-#repo Cmd

@@ -12,7 +12,7 @@ def read(fname):
 
 
 setup(name='upkg',
-      version='0.1.4',
+      version='0.1.5',
       description="Package Yourself",
       url='https://github.com/jeffbuttars/upkg',
       long_description=read('README.md'),
