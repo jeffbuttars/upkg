@@ -37,7 +37,7 @@ class Cmd(BaseCmd):
         )
 
         return super(Cmd, self).build()
-    #build()
+    # build()
 
     def install_repo(self, repo, location=''):
         """todo: Docstring for install_repo
@@ -53,11 +53,12 @@ class Cmd(BaseCmd):
         if not os.path.exists(dst):
             os.makedirs(dst)
 
-        repo = Repo(url=repo, repo_dir=dst)
+        # repo = Repo(url=repo, repo_dir=dst)
+        repo = Repo(url=repo)
         repo.install()
 
         return repo
-    #install_repo()
+    # install_repo()
 
     def exec(self, args):
         """todo: Docstring for exec
