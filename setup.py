@@ -9,7 +9,6 @@ def read(fname):
     with open(os.path.join(os.path.dirname(__file__), fname), 'r') as fd:
         res = fd.read()
     return res
-#read()
 
 
 setup(name='upkg',
@@ -21,7 +20,7 @@ setup(name='upkg',
       author_email="jeff@jeffbuttars.com",
       packages=find_packages(exclude=['tests*']),
       license='GPLv2',
-      package_dir={'pkgs': 'pkgs'},
+      # package_dir={'pkgs': 'pkgs'},
       # install_requires=[
       #     'tornado',
       # ],

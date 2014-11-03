@@ -18,8 +18,8 @@ from pprint import pformat as pf
 import sh
 from sh import git
 
-from upkg.conf import settings
-import upkg.lib.ctx as upkg_ctx
+from conf import settings
+from . import ctx as upkg_ctx
 
 sh.logging_enabled = True
 

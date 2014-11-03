@@ -23,10 +23,10 @@ import os
 if __name__ == '__main__':
     this_dir = os.path.realpath(os.path.dirname(__file__))
     sys.path.insert(0, os.path.abspath(os.path.join(this_dir, "../")))
-    # print(sys.path)
+#     sys.path.insert(0, os.path.abspath(this_dir))
 
 import argparse
-from upkg import cmds
+import cmds
 
 parser = argparse.ArgumentParser(
     "upkg",

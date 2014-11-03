@@ -19,18 +19,10 @@ def build_cmds(sub_parser):
     imlist = [os.path.basename(x) for x in imlist]
     imlist = [os.path.splitext(x)[0] for x in imlist]
 
-    # s = importlib.import_module('cmds.search')
-    # print(s.Cmd.name)
-
     for im in imlist:
-        # print(im)
-        mod = importlib.import_module("upkg." + _this_mod + '.' + im)
+        mod = importlib.import_module(_this_mod + '.' + im)
         if hasattr(mod, 'Cmd'):
-            # print("Found Command: ", mod.Cmd.name)
             cmd_objs[mod.Cmd.name] = mod.Cmd(sub_parser)
             cmd_objs[mod.Cmd.name].build()
-    # end for im in imlist
-    # print(cmd_objs)
 
     return cmd_objs
-#build_cmds()

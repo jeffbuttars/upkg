@@ -13,7 +13,7 @@ class Cmd(BaseCmd):
 
     name = 'install'
     help_text = ("install upkg")
-    aliases = ['i', 'in', 'ins', 'inst', 'insta', 'instal']
+    aliases = ['in', 'ins', 'inst', 'insta', 'instal']
 
     def build(self):
         """todo: Docstring for build

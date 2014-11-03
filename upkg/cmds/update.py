@@ -10,7 +10,7 @@ class Cmd(BaseCmd):
 
     name = 'update'
     help_text = ("update all or some upkg")
-    aliases = ['u', 'up', 'upd', 'upda', 'updat']
+    aliases = ['up', 'upd', 'upda', 'updat']
 
     def build(self):
         """todo: Docstring for build

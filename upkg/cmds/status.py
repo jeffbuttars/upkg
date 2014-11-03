@@ -3,7 +3,7 @@ logger = logging.getLogger('upkg')
 
 from blessings import Terminal
 
-from upkg.cmds.base import BaseCmd
+from cmds.base import BaseCmd
 from upkg.lib import Repo
 
 
@@ -12,7 +12,7 @@ class Cmd(BaseCmd):
 
     name = 'status'
     help_text = ("Get the status of what's installed")
-    aliases = ['s', 'st', 'sta', 'stat', 'statu']
+    aliases = ['st', 'stat']
 
     def build(self):
         """todo: Docstring for build
